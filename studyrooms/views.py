@@ -19,7 +19,7 @@ def studyroom(request, room_id):
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         # 스터디룸 페이지
-        if user in studyroom.users.all():
+        if user in studyroom.member.all():
             taskCount = studyroom.progress_task_set.count()
             averageProgressRate = (
                 0
@@ -38,7 +38,7 @@ def studyroom(request, room_id):
             )
             context = {
                 "room_id": room_id,
-                "memberCount": studyroom.users.count(),
+                "memberCount": studyroom.member.count(),
                 "studyroomName": studyroom.studyroom_name,
                 "totalStudyTime": sum(
                     [
@@ -56,7 +56,7 @@ def studyroom(request, room_id):
                 "studyName": studyroom.studyroom_name,
                 "studyCaptain": studyroom.leader.username,
                 "studyField": studyroom.studyroom_classification,
-                "studyParticipants": studyroom.users.count(),
+                "studyParticipants": studyroom.member.count(),
                 "studyOpen": "공개범위가 이곳에 들어갑니다",
                 "isLeader": user == studyroom.leader,
             }
@@ -86,7 +86,7 @@ def studyroom_calendar(request, room_id):
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
-        if user in studyroom.users.all():
+        if user in studyroom.member.all():
             today = datetime.date.today()
             todayMonth = today.month
             todayYear = today.year
@@ -158,7 +158,7 @@ def studyroom_task(request, room_id, year, month, day):
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
-        if user in studyroom.users.all():
+        if user in studyroom.member.all():
             if request.method == "POST":
                 form = TodoForm(request.POST)
                 if form.is_valid():
@@ -256,7 +256,7 @@ def studyroom_board(request, room_id):
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
-        if user in studyroom.users.all():
+        if user in studyroom.member.all():
             return redirect("board", "n", room_id)
         else:
             return redirect("studyroom", room_id)
@@ -272,8 +272,8 @@ def studyroom_member(request, room_id):
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
-        if user in studyroom.users.all():
-            context["users"] = studyroom.users.all()
+        if user in studyroom.member.all():
+            context["users"] = studyroom.member.all()
             return render(request, "studyrooms/studyroomMember.html", context)
         else:
             return redirect("studyroom", room_id)
@@ -287,7 +287,7 @@ def studyroom_progress(request, room_id):
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
-        if user in studyroom.users.all():
+        if user in studyroom.member.all():
             tasks = studyroom.progress_task_set.all()
             jobs = studyroom.progress_rate_set.all()
 
@@ -297,7 +297,7 @@ def studyroom_progress(request, room_id):
                 else round(
                     sum([job.totalProgress for job in jobs])
                     / len(tasks)
-                    / studyroom.users.count()
+                    / studyroom.member.count()
                     * 100
                 )
             )
@@ -351,7 +351,7 @@ def studyroomConfirm(request, room_id):
                 }
                 return render(request, "studyrooms/studyroomConfirm.html", context)
         # 스터디원 검증
-        elif user in studyroom.users.all():
+        elif user in studyroom.member.all():
             context["isCaptain"] = False
             return render(request, "studyrooms/studyroomConfirm.html", context)
         else:
@@ -382,7 +382,7 @@ def studyroomManage(request, room_id):
                         context = {
                             "room_id": room_id,
                             "isCaptain": True,
-                            "users": studyroom.users.all(),
+                            "users": studyroom.member.all(),
                             "error_message": "스터디장은 추방할 수 없습니다",
                         }
                         return render(
@@ -396,12 +396,12 @@ def studyroomManage(request, room_id):
                 context = {
                     "room_id": room_id,
                     "isCaptain": True,
-                    "users": studyroom.users.all(),
+                    "users": studyroom.member.all(),
                     "isLeader": user == studyroom.leader,
                 }
                 return render(request, "studyrooms/studyroomManage.html", context)
         # 스터디원 검증
-        elif user in studyroom.users.all():
+        elif user in studyroom.member.all():
             context["isCaptain"] = False
             return render(request, "studyrooms/studyroomManage.html", context)
         else:
@@ -437,7 +437,7 @@ def studyroomGoal(request, room_id):
             else:
                 return render(request, "studyrooms/studyroomGoal.html", context)
         # 스터디원 검증
-        elif user in studyroom.users.all():
+        elif user in studyroom.member.all():
             context["isCaptain"] = False
             return render(request, "studyrooms/studyroomGoal.html", context)
         else:
@@ -458,7 +458,7 @@ def studyroom_create(request):
                 ]
                 studyroom.leader = request.user
                 studyroom.save()
-                studyroom.users.add(request.user)
+                studyroom.member.add(request.user)
                 return redirect("studyroom", studyroom.pk)
             else:
                 error = form.errors
