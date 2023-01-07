@@ -1,11 +1,9 @@
 {% load static %}
 
-
 <nav class="nav">
     <a class="nav__logo" href="{% url 'main' %}">We Study</a>
     <div class="nav__menu">
         <a class="nav__link" href="{% url 'studyroomJoin' %}">스터디룸 참여</a>
-        <a class="nav__link" href="{% url 'studyroomMy' %}">나의 스터디룸</a>
         <a class="nav__link" href="{% url 'studyroomMake' %}">스터디룸 등록</a>
         <a class="nav__link" href="{% url 'myPage' %}">마이페이지</a>
         {% if user.is_authenticated != True %}
@@ -13,7 +11,7 @@
         {% else %}
         <a class="nav__link" href="{% url 'logout' %}">{{ user.username }} (로그아웃)</a>
         <!-- <details class="nav__link"><a class="nav-link" onclick="">{{ user.username }} (로그아웃)</a></span> -->
-        
+
         {% endif %}
     </div>
 </nav>

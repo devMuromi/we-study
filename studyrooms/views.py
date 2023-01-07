@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from .forms import StudyroomForm, TodoForm
 from applications.models import *
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 import json
 import datetime
 import calendar
@@ -468,33 +468,28 @@ def studyroomMake(request):
         return redirect("login")
 
 
-def studyroomMy(request):
-    if request.user.is_authenticated:
-        STUDYROOMSPERPAGE = 24  # 페이지당 들어갈 스터디룸 숫자
-        studyrooms = request.user.study_room.all()
-
-        paginator = Paginator(studyrooms, STUDYROOMSPERPAGE)
-        page = request.GET.get("page")
-        modifiedStudyrooms = paginator.get_page(page)
-        pages = range(1, paginator.num_pages + 1)
-
-        context = {"studyrooms": modifiedStudyrooms, "pages": pages}
-        return render(request, "studyrooms/my.html", context)
-    else:
-        return redirect("login")
-
-
 def studyroomJoin(request):
+    STUDYROOMSPERPAGE = 20  # 페이지당 들어갈 스터디룸 숫자
     if request.user.is_authenticated:
-        STUDYROOMSPERPAGE = 20  # 페이지당 숫자
+        my_studyrooms = request.user.study_room.all()
+
         studyrooms = Studyroom.objects.all().order_by("-pk")
+        for studyroom in studyrooms:
+            if studyroom in my_studyrooms:
+                studyrooms = studyrooms.exclude(pk=studyroom.pk)
 
         paginator = Paginator(studyrooms, STUDYROOMSPERPAGE)
         page = request.GET.get("page")
-        modifiedStudyrooms = paginator.get_page(page)
+        modified_studyrooms = paginator.get_page(page)
         pages = range(1, paginator.num_pages + 1)
 
-        context = {"studyrooms": modifiedStudyrooms, "pages": pages}
+        context = {
+            "myStudyrooms": None,
+            "studyrooms": modified_studyrooms,
+            "pages": pages,
+        }
+        if page == None or page == "1":
+            context["myStudyrooms"] = my_studyrooms
 
         return render(request, "studyrooms/join.html", context)
     else:

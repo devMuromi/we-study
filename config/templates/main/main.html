@@ -1,22 +1,15 @@
-{% extends 'base/base.html' %}
-{% load static %}
-{% block content %}
-{% include "base/navbar.html" %}
+{% extends 'base/base.html' %} {% load static %} {% block content %} {% include "base/navbar.html" %}
 <div class="lobby">
     <a href="{% url 'studyroomJoin' %}" class="lobby__box">
-        <img src="{% static 'img/main_menu_join.png' %}">
+        <img src="{% static 'img/main_menu_join.png' %}" />
         <div class="lobby__name">스터디룸 참여</div>
     </a>
     <a href="{% url 'studyroomMake' %}" class="lobby__box">
-        <img src="{% static 'img/main_menu_register.png' %}">
+        <img src="{% static 'img/main_menu_register.png' %}" />
         <div class="lobby__name">스터디룸 등록</div>
     </a>
-    <a href="{% url 'studyroomMy' %}" class="lobby__box">
-        <img src="{% static 'img/main_menu_myStudyRoom.png' %}">
-        <div class="lobby__name">나의 스터디룸</div>
-    </a>
     <a href="{% url 'myPage' %}" class="lobby__box">
-        <img src="{% static 'img/main_menu_mypage.png' %}">
+        <img src="{% static 'img/main_menu_mypage.png' %}" />
         <div class="lobby__name">마이페이지</div>
     </a>
 </div>

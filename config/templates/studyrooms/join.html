@@ -12,6 +12,32 @@
                 </tr>
             </thead>
             <tbody>
+            {% for myStudyroom in myStudyrooms %}
+                <tr class="h-12 border-b">
+                    <td class="w-1/12">{{ myStudyroom.pk }}</th>
+                    <td class="w-4/12">
+                        <a href="{% url 'studyroom' myStudyroom.pk %}">
+                            {{ myStudyroom.studyroom_name }}
+                        </a>
+                    </td>
+                    <td class="w-7/12">
+                        <a href="{% url 'studyroom' myStudyroom.pk %}">
+                            {{ myStudyroom.studyroom_classification }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <table class="border-collapse w-full">
+            <thead>
+                <tr class="h-12 border-b border-gray-500">
+                    <th class="text-left" scope="col">#</th>
+                    <th class="text-left" scope="col">스터디 이름</th>
+                    <th class="text-left" scope="col">설명</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for studyroom in studyrooms %}
                 <tr class="h-12 border-b">
                     <td class="w-1/12">{{ studyroom.pk }}</th>
