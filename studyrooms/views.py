@@ -4,7 +4,7 @@ from users.models import *
 from applications.models import *
 from django.contrib import auth
 from django.core.paginator import Paginator
-from .forms import StudyroomForm, TodoForm
+from .forms import StudyroomForm, StudyForm
 from applications.models import *
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -250,14 +250,10 @@ def studyroom_task(request, room_id, year, month, day):
 
 def studyroom_board(request, room_id):
     if request.user.is_authenticated:
-        context = {
-            "room_id": room_id,
-        }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
-
         if user in studyroom.member.all():
-            return redirect("board", "n", room_id)
+            return redirect("board", "N", room_id)
         else:
             return redirect("studyroom", room_id)
     else:

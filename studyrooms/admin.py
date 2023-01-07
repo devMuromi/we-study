@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import *
+from .models import Studyroom, Schedule, Task, Study, StudyroomInfo
 
 admin.site.register(Studyroom)
-admin.site.register(Calendar)
-admin.site.register(Progress_task)
-admin.site.register(Todo)
-admin.site.register(Progress_rate)
+admin.site.register(Schedule)
+admin.site.register(Task)
+admin.site.register(Study)
+admin.site.register(StudyroomInfo)
 
 
 class StudyroomAdmin(admin.ModelAdmin):

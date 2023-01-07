@@ -1,6 +1,6 @@
 from django.db import models
-from studyrooms.models import *
-from users.models import *
+from studyrooms.models import Studyroom
+from users.models import User
 
 
 class Post(models.Model):
@@ -8,24 +8,22 @@ class Post(models.Model):
     content = models.TextField()
     create_date = models.DateTimeField(auto_now_add=True)
     modify_date = models.DateTimeField(auto_now=True)
-    THEMA_CHOICES = (
-        ("n", "공지게시판"),
-        ("f", "자유게시판"),
-        ("q", "질문게시판"),
-        ("i", "정보게시판"),
+    FORUM_CHOICES = (
+        ("N", "공지게시판"),
+        ("G", "자유게시판"),
+        ("Q", "질문게시판"),
+        ("I", "정보게시판"),
     )
-    thema = models.CharField(
-        max_length=1, choices=THEMA_CHOICES
-    )  # 자유게시판/ 질문게시판/ 정보게시판 이런거...
-    author = models.ForeignKey("users.user", on_delete=models.CASCADE)
-    studyroom = models.ForeignKey("studyrooms.Studyroom", on_delete=models.CASCADE)
+    type = models.CharField(max_length=1, choices=FORUM_CHOICES)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    studyroom = models.ForeignKey(Studyroom, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
 
 class Comment(models.Model):
-    author = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    board = models.ForeignKey("Post", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now_add=True)

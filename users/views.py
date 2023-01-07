@@ -6,37 +6,21 @@ from .forms import *
 from django.conf import settings
 
 
-def signUp(request):
+def sign_up(request):
     if request.method == "POST":
         form = UserForm(request.POST)
         if form.is_valid():
             user = User.objects.create_user(**form.cleaned_data)
             auth.login(request, user)
             return redirect("/")
-
         else:
-            return render(request, "users/signUp.html")
-    else:
-        # 로그인 상태면 main으로 리다이렉트 합니다
+            return render(request, "auth/signup.html")
+    elif request.method == "GET":
         if request.user.is_authenticated:
             return redirect("main")
         else:
             form = UserForm()
-            return render(request, "users/signUp.html")
-    #     if request.POST['password'] == request.POST['confirm']:
-    #         username = request.POST["username"]
-    #         email = request.POST["email"]
-    #         password = request.POST["password"]
-    #         gender = request.POST["gender"]
-    #         birth_date = request.POST["birth_date"]
-
-    #         user = User.objects.create_user(username, email, gender, birth_date, password)
-
-    #         user.save()
-    #         auth.login(request,user)
-
-    #     return render(request, "login.html")
-    # return render(request, "sign_up.html")
+            return render(request, "auth/signup.html")
 
 
 def login(request):
@@ -69,7 +53,7 @@ def login(request):
         if request.user.is_authenticated:
             return redirect("main")
         else:
-            return render(request, "users/login.html")
+            return render(request, "auth/login.html")
 
 
 # 로그아웃 뷰
@@ -81,12 +65,12 @@ def logout(request):
 
 
 def found(request):
-    return render(request, "users/found.html")
+    return render(request, "auth/found.html")
 
 
-def idfound(request):
-    return render(request, "users/idFound.html")
+def found_id(request):
+    return render(request, "auth/idFound.html")
 
 
-def pwfound(request):
-    return render(request, "users/pwFound.html")
+def found_password(request):
+    return render(request, "auth/pwFound.html")

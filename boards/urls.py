@@ -5,13 +5,20 @@ from django.conf import settings
 
 
 urlpatterns = [
-    path("board/<str:board_id>/<int:studyroom_id>", views.board, name="board"),
-    path("new/<int:room_id>/<str:board_thema>", views.postnew, name="postnew"),
-    path("study/<str:board_thema>/<int:room_id>", views.postcreate, name="postcreate"),
-    path("detail/<int:room_id>/<int:post_id>", views.detail, name="detail"),
-    path("postdelete/<int:room_id>/<int:post_id>", views.postdelete, name="postdelete"),
-    path("postedit/<int:room_id>/<int:post_id>", views.postedit, name="postedit"),
-    path("postupdate/<int:room_id>/<int:post_id>", views.postupdate, name="postupdate"),
+    path("<int:studyroom_id>/<str:forum_type>/", views.forum, name="board"),
+    path("post/<int:studyroom_id>/<int:post_id>", views.post, name="detail"),
+    path(
+        "create/<int:studyroom_id>/<str:forum_type>/",
+        views.create_post,
+        name="craetePost",
+    ),
+    path("edit/<int:studyroom_id>/<int:post_id>", views.edit_post, name="postedit"),
+    path(
+        "delete/<int:studyroom_id>/<int:post_id>", views.delete_post, name="postdelete"
+    ),
+    path(
+        "update/<int:studyroom_id>/<int:post_id>", views.update_post, name="postupdate"
+    ),
     path(
         "postsearch/<int:room_id>/<str:board_thema>",
         views.postsearch,

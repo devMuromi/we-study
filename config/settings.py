@@ -39,12 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "studyrooms",
-    "invitations",
     "config",
-    # 'foo',
-    # 'foo.apps.FooConfig',
     "applications",
-    "theme",
     "boards",
 ]
 

@@ -1,14 +1,14 @@
-from .models import Studyroom, Todo
+from .models import Studyroom, Study
 from django import forms
 
 
 class StudyroomForm(forms.ModelForm):
     class Meta:
         model = Studyroom
-        fields = ["studyroom_name", "studyroom_classification"]
+        fields = ["name", "description"]
 
 
-class TodoForm(forms.ModelForm):
+class StudyForm(forms.ModelForm):
     class Meta:
-        model = Todo
+        model = Study
         fields = ["content", "learning_time", "progress"]

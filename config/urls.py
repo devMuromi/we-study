@@ -19,9 +19,9 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.main, name="main"),
-    path("users/", include("users.urls")),
-    path("studyrooms/", include("studyrooms.urls")),
-    path("boards/", include("boards.urls")),
+    path("user/", include("users.urls")),
+    path("studyroom/", include("studyrooms.urls")),
+    path("board/", include("boards.urls")),
     path("mypage/", views.myPage, name="myPage"),
     path("mypage/myinfo/", views.myInfo, name="myInfo"),
     path("mypage/mycalender/", views.myCalender, name="myCalender"),

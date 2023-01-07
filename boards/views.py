@@ -1,14 +1,68 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import *
-from users.models import *
-from studyrooms.models import *
-from django.contrib import messages
+from .models import Post, Comment
+from users.models import User
+from studyrooms.models import Studyroom
 from django.core.paginator import Paginator
 
-# Create your views here.
+
+def forum(request, forum_type, studyroom_id):
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    posts = Post.objects.filter(studyroom=studyroom, type=forum_type)
+    paginator = Paginator(posts, 10)
+    page = request.GET.get("page")
+    ret_posts = paginator.get_page(page)
+
+    FORUM_TYPES = {"N": "공지게시판", "G": "자유게시판", "Q": "질문게시판", "I": "정보게시판"}
+    forum_type = FORUM_TYPES[forum_type]
+    context = {
+        "studyroomId": studyroom_id,
+        "forumType": forum_type,
+        "posts": ret_posts,
+    }
+    return render(request, "forum/forum.html", context)
 
 
-def postedit(request, room_id, post_id):
+def post(request, studyroom_id, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    if request.method == "POST":
+        comment = Comment()
+        comment.author = request.user
+        comment.content = request.POST["content"]
+        post = get_object_or_404(Post, pk=post_id)
+        comment.board = post
+        comment.save()
+    comments = Comment.objects.filter(board=post)
+    context = {
+        "post": post,
+        "comments": comments,
+        "room_id": room_id,
+    }
+    return render(request, "boards/post.html", context)
+
+
+def create_post(request, forum_type, studyroom_id):
+    if request.method == "POST":
+        post = Post()
+        post.title = request.POST["title"]
+        post.content = request.POST["content"]
+        post.thema = board_thema
+        post.author = request.user
+        studyroom = get_object_or_404(Studyroom, pk=room_id)
+        post.studyroom = studyroom
+        post.save()
+        context = {
+            "room_id": room_id,
+            "board_thema": board_thema,
+        }
+        return redirect("/boards/board/" + board_thema + "/" + str(room_id))
+    context = {
+        "room_id": room_id,
+        "board_thema": board_thema,
+    }
+    return render(request, "forum/createpost.html", context)
+
+
+def edit_post(request, studyroom_id, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if post.author == request.user:
         return render(
@@ -26,79 +80,7 @@ def postedit(request, room_id, post_id):
         return redirect("detail", room_id, post_id)
 
 
-def board(request, board_id, studyroom_id):
-    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
-    allposts = Post.objects.filter(studyroom=studyroom)
-    posts = allposts.filter(thema=board_id)
-    paginator = Paginator(posts, 5)
-    page = request.GET.get("page")
-    page_posts = paginator.get_page(page)
-
-    if board_id == "n":
-        thema = "공지게시판"
-    if board_id == "f":
-        thema = "자유게시판"
-    if board_id == "q":
-        thema = "질문게시판"
-    if board_id == "i":
-        thema = "정보게시판"
-
-    context = {
-        "room_id": studyroom_id,
-        "posts": posts,
-        "board_thema": board_id,
-        "page_posts": page_posts,
-        "thema": thema,
-    }
-    return render(request, "boards/boardlist.html", context)
-
-
-def postnew(request, room_id, board_thema):
-    context = {
-        "room_id": room_id,
-        "board_thema": board_thema,
-    }
-    return render(request, "boards/postnew.html", context)
-
-
-def postcreate(request, room_id, board_thema):
-    print(request.method)
-    if request.method == "POST":
-        post = Post()
-        post.title = request.POST["title"]
-        post.content = request.POST["content"]
-        post.thema = board_thema
-        post.author = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-        post.studyroom = studyroom
-        post.save()
-        context = {
-            "room_id": room_id,
-            "board_thema": board_thema,
-        }
-    return redirect("/boards/board/" + board_thema + "/" + str(room_id))
-
-
-def detail(request, room_id, post_id):
-    post = get_object_or_404(Post, pk=post_id)
-    if request.method == "POST":
-        comment = Comment()
-        comment.author = request.user
-        comment.content = request.POST["content"]
-        post = get_object_or_404(Post, pk=post_id)
-        comment.board = post
-        comment.save()
-    comments = Comment.objects.filter(board=post)
-    context = {
-        "post": post,
-        "comments": comments,
-        "room_id": room_id,
-    }
-    return render(request, "boards/detail.html", context)
-
-
-def postdelete(request, room_id, post_id):
-
+def delete_post(request, studyroom_id, post_id):
     deletepost = get_object_or_404(Post, pk=post_id)
     if deletepost.author == request.user:
         board_thema = deletepost.thema
@@ -115,7 +97,7 @@ def postdelete(request, room_id, post_id):
         return render(request, "boards/detail.html", context)
 
 
-def postupdate(request, room_id, post_id):
+def update_post(request, studyroom_id, post_id):
     if request.method == "POST":
         post = get_object_or_404(Post, pk=post_id)
         post.title = request.POST["title"]
