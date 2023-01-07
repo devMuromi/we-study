@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path("make/", views.studyroom_create, name="studyroomMake"),
-    path("lobby/", views.studyroomJoin, name="studyroomJoin"),
+    path("lobby/", views.studyroom_lobby, name="studyroomJoin"),
     path("room/<int:room_id>", views.studyroom, name="studyroom"),
     path("room/<int:room_id>/board", views.studyroom_board, name="studyroomBoard"),
     path(
