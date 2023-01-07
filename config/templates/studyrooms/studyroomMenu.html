@@ -1,14 +1,18 @@
-<div class="flex flex-col w-44">
-    <span class="text-2xl font-semibold mb-4">스터디룸</span>
-    <a href="{% url 'studyroom' room_id %}" class="mb-2 font-semibold hover:text-gray-500">스터디룸 홈</a>
-    <div class="border-t border-gray-500 mb-2"></div>
-    <a href="{% url 'studyroomCalendar' room_id %}" class="mb-2 font-semibold hover:text-gray-500">스터디룸 달력</a>
-    <a href="{% url 'studyroomBoard' room_id  %}" class="mb-2 font-semibold hover:text-gray-500">게시판</a>
-    <div class="border-t border-gray-500 mb-2"></div>
-    <a href="{% url 'studyroomMember' room_id %}" class="mb-2 font-semibold hover:text-gray-500">참여 멤버</a>
-    <a href="{% url 'studyroomProgress' room_id %}" class="mb-2 font-semibold hover:text-gray-500">스터디 목표</a>
-    <div class="border-t border-gray-500 mb-2"></div>
-    <a href="{% url 'studyroomGoal' room_id %}" class="mb-2 font-semibold hover:text-gray-500">스터디 목표 관리</a>
-    <a href="{% url 'studyroomConfirm' room_id %}" class="mb-2 font-semibold hover:text-gray-500">참여 신청 확인</a>
-    <a href="{% url 'studyroomManage' room_id %}" class="mb-2 font-semibold hover:text-gray-500">멤버 관리</a>
+<div class="list-group list-group-flush" style="width: 256px">
+    <h2>스터디룸</h2>
+    <a href="{% url 'studyroom' room_id %}" class="list-group-item list-group-item-action">스터디룸 홈</a>
+
+    <a href="{% url 'studyroomCalendar' room_id %}" class="list-group-item list-group-item-action">스터디룸 달력</a>
+    <a href="{% url 'studyroomBoard' room_id  %}" class="list-group-item list-group-item-action">게시판</a>
+
+    <a href="{% url 'studyroomMember' room_id %}" class="list-group-item list-group-item-action">참여 멤버</a>
+    <a href="{% url 'studyroomProgress' room_id %}" class="list-group-item list-group-item-action">스터디 목표</a>
+
+    {% if isLeader %}
+    <li class="list-group-item list-group-item-warning">관리자 전용</li>
+
+    <a href="{% url 'studyroomGoal' room_id %}" class="list-group-item list-group-item-action list-group-item-warning">스터디 목표 관리</a>
+    <a href="{% url 'studyroomConfirm' room_id %}" class="list-group-item list-group-item-action list-group-item-warning">참여 신청 확인</a>
+    <a href="{% url 'studyroomManage' room_id %}" class="list-group-item list-group-item-action list-group-item-warning">멤버 관리</a>
+    {% endif %}
 </div>

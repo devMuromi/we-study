@@ -47,6 +47,7 @@ def studyroom(request, room_id):
                     ]
                 ),
                 "averageProgressRate": averageProgressRate,
+                "isLeader": user == studyroom.leader,
             }
             return render(request, "studyrooms/studyroom.html", context)
         # 신청서 페이지
@@ -57,6 +58,7 @@ def studyroom(request, room_id):
                 "studyField": studyroom.studyroom_classification,
                 "studyParticipants": studyroom.users.count(),
                 "studyOpen": "공개범위가 이곳에 들어갑니다",
+                "isLeader": user == studyroom.leader,
             }
             if request.method == "POST":
                 studyroom = get_object_or_404(Studyroom, pk=room_id)
@@ -139,6 +141,7 @@ def studyroom_calendar(request, room_id):
                 "month": month,
                 "lastMonth": lastMonth,
                 "nextMonth": nextMonth,
+                "isLeader": user == studyroom.leader,
             }
             return render(request, "studyrooms/studyroomCalendar.html", context)
         else:
@@ -308,6 +311,7 @@ def studyroom_progress(request, room_id):
                 "totalProgressRate": total_progress_rate,
                 "myProgressRate": my_progress_rate,
                 "tasks": tasks,
+                "isLeader": user == studyroom.leader,
             }
             return render(request, "studyrooms/studyroomProgress.html", context)
         else:
@@ -393,6 +397,7 @@ def studyroomManage(request, room_id):
                     "room_id": room_id,
                     "isCaptain": True,
                     "users": studyroom.users.all(),
+                    "isLeader": user == studyroom.leader,
                 }
                 return render(request, "studyrooms/studyroomManage.html", context)
         # 스터디원 검증
