@@ -1,26 +1,27 @@
 from django.urls import path, include
 from . import views
-from django.contrib import admin
-from django.conf import settings
-
 
 urlpatterns = [
-    path("make/", views.studyroomMake, name="studyroomMake"),
-    path("join/", views.studyroomJoin, name="studyroomJoin"),
+    path("make/", views.studyroom_create, name="studyroomMake"),
+    path("lobby/", views.studyroomJoin, name="studyroomJoin"),
     path("room/<int:room_id>", views.studyroom, name="studyroom"),
-    path("room/<int:room_id>/board", views.studyroomBoard, name="studyroomBoard"),
+    path("room/<int:room_id>/board", views.studyroom_board, name="studyroomBoard"),
     path(
-        "room/<int:room_id>/calendar", views.studyroomCalendar, name="studyroomCalendar"
+        "room/<int:room_id>/calendar",
+        views.studyroom_calendar,
+        name="studyroomCalendar",
     ),
     path(
         "room/<int:room_id>/calendar/<int:year>-<int:month>-<int:day>",
-        views.studyroomTask,
+        views.studyroom_task,
         name="studyroomTask",
     ),
-    path("room/<int:room_id>/member", views.studyroomMember, name="studyroomMember"),
+    path("room/<int:room_id>/member", views.studyroom_member, name="studyroomMember"),
     path("room/<int:room_id>/time", views.studyroomTime, name="studyroomTime"),
     path(
-        "room/<int:room_id>/progress", views.studyroomProgress, name="studyroomProgress"
+        "room/<int:room_id>/progress",
+        views.studyroom_progress,
+        name="studyroomProgress",
     ),
     path("room/<int:room_id>/manage", views.studyroomManage, name="studyroomManage"),
     path("room/<int:room_id>/confirm", views.studyroomConfirm, name="studyroomConfirm"),

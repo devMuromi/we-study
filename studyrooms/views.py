@@ -76,7 +76,7 @@ def studyroom(request, room_id):
         return redirect("login")
 
 
-def studyroomCalendar(request, room_id):
+def studyroom_calendar(request, room_id):
     if request.user.is_authenticated:
         context = {
             "room_id": room_id,
@@ -147,7 +147,7 @@ def studyroomCalendar(request, room_id):
         return redirect("login")
 
 
-def studyroomTask(request, room_id, year, month, day):
+def studyroom_task(request, room_id, year, month, day):
     if request.user.is_authenticated:
         context = {
             "room_id": room_id,
@@ -245,7 +245,7 @@ def studyroomTask(request, room_id, year, month, day):
         return redirect("login")
 
 
-def studyroomBoard(request, room_id):
+def studyroom_board(request, room_id):
     if request.user.is_authenticated:
         context = {
             "room_id": room_id,
@@ -261,7 +261,7 @@ def studyroomBoard(request, room_id):
         return redirect("login")
 
 
-def studyroomMember(request, room_id):
+def studyroom_member(request, room_id):
     if request.user.is_authenticated:
         context = {
             "room_id": room_id,
@@ -302,16 +302,37 @@ def studyroomTime(request, room_id):
         return redirect("login")
 
 
-def studyroomProgress(request, room_id):
+def studyroom_progress(request, room_id):
     if request.user.is_authenticated:
-        context = {
-            "room_id": room_id,
-        }
+
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         if user in studyroom.users.all():
-            context["tasks"] = studyroom.progress_task_set.all()
+            tasks = studyroom.progress_task_set.all()
+            jobs = studyroom.progress_rate_set.all()
+
+            total_progress_rate = (
+                0
+                if len(tasks or jobs) == 0
+                else round(
+                    sum([job.totalProgress for job in jobs])
+                    / len(tasks)
+                    / studyroom.users.count()
+                    * 100
+                )
+            )
+            my_progress_rate = round(
+                studyroom.progress_rate_set.get(user=user).totalProgress
+                / len(tasks)
+                * 100
+            )
+            context = {
+                "room_id": room_id,
+                "totalProgressRate": total_progress_rate,
+                "myProgressRate": my_progress_rate,
+                "tasks": tasks,
+            }
             return render(request, "studyrooms/studyroomProgress.html", context)
         else:
             return redirect("studyroom", room_id)
@@ -444,7 +465,7 @@ def studyroomGoal(request, room_id):
         return redirect("login")
 
 
-def studyroomMake(request):
+def studyroom_create(request):
     if request.user.is_authenticated:
         if request.method == "POST":
             form = StudyroomForm(request.POST)
