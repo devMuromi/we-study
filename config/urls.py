@@ -1,9 +1,5 @@
-"""config URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
+"""
+config URL Configuration
     1. Add an import:  from my_app import views
     2. Add a URL to urlpatterns:  path('', views.home, name='home')
 Class-based views
@@ -21,14 +17,13 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    path('', views.main, name='main'),
-    path('users/', include("users.urls")),
-    path('studyrooms/', include('studyrooms.urls')),
-    path('boards/', include('boards.urls')),
-    path('mypage/', views.myPage, name='myPage'),
-    path('mypage/myinfo/', views.myInfo, name='myInfo'),
-    path('mypage/mycalender/', views.myCalender, name='myCalender'),
-    path('mypage/mypassword/', views.myPassword, name='myPassword'),
+    path("admin/", admin.site.urls),
+    path("", views.main, name="main"),
+    path("users/", include("users.urls")),
+    path("studyrooms/", include("studyrooms.urls")),
+    path("boards/", include("boards.urls")),
+    path("mypage/", views.myPage, name="myPage"),
+    path("mypage/myinfo/", views.myInfo, name="myInfo"),
+    path("mypage/mycalender/", views.myCalender, name="myCalender"),
+    path("mypage/mypassword/", views.myPassword, name="myPassword"),
 ]

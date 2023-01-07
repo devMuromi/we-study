@@ -4,12 +4,14 @@ from django.db import models
 class Application(models.Model):
     studyroomId = models.ForeignKey(
         "studyrooms.studyroom",
-        on_delete = models.CASCADE,
-        related_name = "application",)
-    
+        on_delete=models.CASCADE,
+        related_name="application",
+    )
+
     userId = models.ForeignKey(
         "users.user",
-        on_delete = models.CASCADE,
-        related_name = "application",)
-    
+        on_delete=models.CASCADE,
+        related_name="application",
+    )
+
     text = models.TextField()

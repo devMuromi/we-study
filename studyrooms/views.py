@@ -21,27 +21,44 @@ def studyroom(request, room_id):
         # 스터디룸 페이지
         if user in studyroom.users.all():
             taskCount = studyroom.progress_task_set.count()
-            averageProgressRate = 0 if taskCount == 0 else round(sum(
-                [progressRate.totalProgress for progressRate in studyroom.progress_rate_set.all()]) / taskCount * 100, 1)
+            averageProgressRate = (
+                0
+                if taskCount == 0
+                else round(
+                    sum(
+                        [
+                            progressRate.totalProgress
+                            for progressRate in studyroom.progress_rate_set.all()
+                        ]
+                    )
+                    / taskCount
+                    * 100,
+                    1,
+                )
+            )
             context = {
-                'room_id': room_id,
-                'memberCount': studyroom.users.count(),
-                'studyroomName': studyroom.studyroom_name,
-                'totalStudyTime': sum([progressRate.totalHour for progressRate in studyroom.progress_rate_set.all()]),
-                'averageProgressRate': averageProgressRate,
-
+                "room_id": room_id,
+                "memberCount": studyroom.users.count(),
+                "studyroomName": studyroom.studyroom_name,
+                "totalStudyTime": sum(
+                    [
+                        progressRate.totalHour
+                        for progressRate in studyroom.progress_rate_set.all()
+                    ]
+                ),
+                "averageProgressRate": averageProgressRate,
             }
-            return render(request, 'studyrooms/studyroom.html', context)
+            return render(request, "studyrooms/studyroom.html", context)
         # 신청서 페이지
         else:
             context = {
-                'studyName': studyroom.studyroom_name,
-                'studyCaptain': studyroom.leader.username,
-                'studyField': studyroom.studyroom_classification,
-                'studyParticipants': studyroom.users.count(),
-                'studyOpen': '공개범위가 이곳에 들어갑니다'
+                "studyName": studyroom.studyroom_name,
+                "studyCaptain": studyroom.leader.username,
+                "studyField": studyroom.studyroom_classification,
+                "studyParticipants": studyroom.users.count(),
+                "studyOpen": "공개범위가 이곳에 들어갑니다",
             }
-            if(request.method == "POST"):
+            if request.method == "POST":
                 studyroom = get_object_or_404(Studyroom, pk=room_id)
                 if studyroom.application.filter(userId=request.user).count() == 0:
                     application = Application()
@@ -50,19 +67,19 @@ def studyroom(request, room_id):
                     application.text = request.POST["studyroom_classification"]
                     application.save()
                 else:
-                    context['error'] = '이미 스터디룸 참여 요청을 보냈습니다'
-                    return render(request, 'studyrooms/request.html', context)
-                return redirect('main')
+                    context["error"] = "이미 스터디룸 참여 요청을 보냈습니다"
+                    return render(request, "studyrooms/request.html", context)
+                return redirect("main")
             else:
-                return render(request, 'studyrooms/request.html', context)
+                return render(request, "studyrooms/request.html", context)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomCalendar(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
@@ -75,16 +92,22 @@ def studyroomCalendar(request, room_id):
             # get PARAM에서 연/월 가져오기
             try:
                 date = request.GET["date"]
-                year, month = map(int, date.split('-'))
+                year, month = map(int, date.split("-"))
             except:
                 year, month = todayYear, todayMonth
 
             startWeekday, lastDay = calendar.monthrange(year, month)
 
-            lastMonth = str(year if month != 1 else year - 1) + \
-                '-' + str(month - 1 if month != 1 else 12)
-            nextMonth = str(year if month != 12 else year + 1) + \
-                '-' + str(month + 1 if month != 12 else 1)
+            lastMonth = (
+                str(year if month != 1 else year - 1)
+                + "-"
+                + str(month - 1 if month != 1 else 12)
+            )
+            nextMonth = (
+                str(year if month != 12 else year + 1)
+                + "-"
+                + str(month + 1 if month != 12 else 1)
+            )
 
             weeks = [
                 [{}, {}, {}, {}, {}, {}, {}],
@@ -97,53 +120,61 @@ def studyroomCalendar(request, room_id):
 
             j = startWeekday + 1
             for i in range(lastDay):
-                weeks[j//7][j % 7]['day'] = i + 1
+                weeks[j // 7][j % 7]["day"] = i + 1
                 selectedDate = datetime.date(year, month, i + 1)
                 dayCalendar, isCalendarCreated = Calendar.objects.get_or_create(
-                        studyroom=studyroom, date=selectedDate)
+                    studyroom=studyroom, date=selectedDate
+                )
 
                 todos = dayCalendar.todo_set.all()
                 todoList = [todo.writer for todo in todos]
-                weeks[j//7][j % 7]['tasks'] = todoList
+                weeks[j // 7][j % 7]["tasks"] = todoList
 
                 j += 1
 
             context = {
-                'room_id': room_id,
-                'weeks': weeks,
-                'year': year,
-                'month': month,
-                'lastMonth': lastMonth,
-                'nextMonth': nextMonth,
+                "room_id": room_id,
+                "weeks": weeks,
+                "year": year,
+                "month": month,
+                "lastMonth": lastMonth,
+                "nextMonth": nextMonth,
             }
-            return render(request, 'studyrooms/studyroomCalendar.html', context)
+            return render(request, "studyrooms/studyroomCalendar.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomTask(request, room_id, year, month, day):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         if user in studyroom.users.all():
-            if request.method == 'POST':
+            if request.method == "POST":
                 form = TodoForm(request.POST)
                 if form.is_valid():
-                    currentUserTask = studyroom.progress_rate_set.get(user=user).totalProgress
+                    currentUserTask = studyroom.progress_rate_set.get(
+                        user=user
+                    ).totalProgress
                     # 정상적이지 않은 접근으로 progress값이 범위 밖일때
-                    if form.cleaned_data['progress'] < currentUserTask or form.cleaned_data['progress'] > studyroom.progress_task_set.count():
-                        context['error_message'] = '진도율이 잘못되었습니다, 새로 고침을 해주세요'
-                        return render(request, 'studyrooms/studyroomTask.html', context)
+                    if (
+                        form.cleaned_data["progress"] < currentUserTask
+                        or form.cleaned_data["progress"]
+                        > studyroom.progress_task_set.count()
+                    ):
+                        context["error_message"] = "진도율이 잘못되었습니다, 새로 고침을 해주세요"
+                        return render(request, "studyrooms/studyroomTask.html", context)
 
                     selectedDate = datetime.date(year, month, day)
                     calendar, isCalendarCreated = Calendar.objects.get_or_create(
-                        studyroom=studyroom, date=selectedDate)
+                        studyroom=studyroom, date=selectedDate
+                    )
 
                     todo = Todo()
                     todo.calendar = calendar
@@ -154,83 +185,103 @@ def studyroomTask(request, room_id, year, month, day):
                     todo.save()
 
                     progress_rate = studyroom.progress_rate_set.get(user=user)
-                    progress_rate.totalHour = progress_rate.totalHour + todo.learning_time
+                    progress_rate.totalHour = (
+                        progress_rate.totalHour + todo.learning_time
+                    )
                     progress_rate.totalProgress = todo.progress
                     progress_rate.save()
-                    return redirect('studyroomTask', room_id, year, month, day)
+                    return redirect("studyroomTask", room_id, year, month, day)
                 else:
                     error = form.errors
-                    context['error_message'] = error
-                    return render(request, 'studyrooms/studyroomTask.html', context)
+                    context["error_message"] = error
+                    return render(request, "studyrooms/studyroomTask.html", context)
 
             else:
                 try:
-                    changMonthToEng = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May',
-                                    6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+                    changMonthToEng = {
+                        1: "Jan",
+                        2: "Feb",
+                        3: "Mar",
+                        4: "Apr",
+                        5: "May",
+                        6: "Jun",
+                        7: "Jul",
+                        8: "Aug",
+                        9: "Sep",
+                        10: "Oct",
+                        11: "Nov",
+                        12: "Dec",
+                    }
                     selectedDate = datetime.date(year, month, day)
-                    context['year'] = year
-                    context['month'] = month
-                    context['month_eng'] = changMonthToEng[month]
-                    context['day'] = day
+                    context["year"] = year
+                    context["month"] = month
+                    context["month_eng"] = changMonthToEng[month]
+                    context["day"] = day
 
                     # todo 목록
                     calendar, isCalendarCreated = Calendar.objects.get_or_create(
-                        studyroom=studyroom, date=selectedDate)
-                    context['todos'] = calendar.todo_set.all()
-                    for todo in context['todos']:
+                        studyroom=studyroom, date=selectedDate
+                    )
+                    context["todos"] = calendar.todo_set.all()
+                    for todo in context["todos"]:
                         todo.progress = studyroom.progress_task_set.get(
-                            taskNumber=todo.progress).task
+                            taskNumber=todo.progress
+                        ).task
 
                     tasks = studyroom.progress_task_set.all()
-                    currentUserTask = studyroom.progress_rate_set.get(user=user).totalProgress
-                    context['tasks'] = tasks[(currentUserTask - 1 if currentUserTask > 0 else 0):]
+                    currentUserTask = studyroom.progress_rate_set.get(
+                        user=user
+                    ).totalProgress
+                    context["tasks"] = tasks[
+                        (currentUserTask - 1 if currentUserTask > 0 else 0) :
+                    ]
 
                 except ValueError:
-                    context['error_message'] = '날짜가 잘못되었습니다'
-                return render(request, 'studyrooms/studyroomTask.html', context)
+                    context["error_message"] = "날짜가 잘못되었습니다"
+                return render(request, "studyrooms/studyroomTask.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomBoard(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         if user in studyroom.users.all():
-            return redirect('board', 'n', room_id)
+            return redirect("board", "n", room_id)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomMember(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         if user in studyroom.users.all():
-            context['users'] = studyroom.users.all()
-            return render(request, 'studyrooms/studyroomMember.html', context)
+            context["users"] = studyroom.users.all()
+            return render(request, "studyrooms/studyroomMember.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomTime(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
@@ -240,50 +291,52 @@ def studyroomTime(request, room_id):
             calendars = studyroom.calendar_set.all()
             for calendar in calendars:
                 studyCount += calendar.todo_set.filter(writer=user).count()
-            context['study_count'] = studyCount
-            context['study_time'] = studyroom.progress_rate_set.all().get(user=user).totalHour
-            return render(request, 'studyrooms/studyroomTime.html', context)
+            context["study_count"] = studyCount
+            context["study_time"] = (
+                studyroom.progress_rate_set.all().get(user=user).totalHour
+            )
+            return render(request, "studyrooms/studyroomTime.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomProgress(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         if user in studyroom.users.all():
-            context['tasks'] = studyroom.progress_task_set.all()
-            return render(request, 'studyrooms/studyroomProgress.html', context)
+            context["tasks"] = studyroom.progress_task_set.all()
+            return render(request, "studyrooms/studyroomProgress.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomConfirm(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         # 스터디장 검증
         if studyroom.leader == user:
-            if(request.method == "POST"):
+            if request.method == "POST":
                 data = json.loads(request.body.decode())
-                application = Application.objects.get(pk=int(data['appId']))
-                if data['choice'] == 'accept':
+                application = Application.objects.get(pk=int(data["appId"]))
+                if data["choice"] == "accept":
                     application.userId.study_room.add(studyroom)
                     application.delete()
 
-                elif data['choice'] == 'decline':
+                elif data["choice"] == "decline":
                     # 추후에 신청 거절/수락 여부를 알림등으로 알리는 기능 추가
                     application.delete()
 
@@ -291,19 +344,20 @@ def studyroomConfirm(request, room_id):
             else:
                 applications = studyroom.application.all()
                 context = {
-                    'room_id': room_id,
-                    'isCaptain': True,
-                    'applications': applications,
+                    "room_id": room_id,
+                    "isCaptain": True,
+                    "applications": applications,
                 }
-                return render(request, 'studyrooms/studyroomConfirm.html', context)
+                return render(request, "studyrooms/studyroomConfirm.html", context)
         # 스터디원 검증
         elif user in studyroom.users.all():
-            context['isCaptain'] = False
-            return render(request, 'studyrooms/studyroomConfirm.html', context)
+            context["isCaptain"] = False
+            return render(request, "studyrooms/studyroomConfirm.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
+
 
 # 이후에 스터디장 이전 기능 추가하기
 
@@ -311,80 +365,83 @@ def studyroomConfirm(request, room_id):
 def studyroomManage(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
 
         # 스터디장 검증
         if studyroom.leader == request.user:
-            if(request.method == "POST"):
+            if request.method == "POST":
                 data = json.loads(request.body.decode())
-                selectedUser = User.objects.get(pk=int(data['userId']))
-                if data['choice'] == 'ban':
+                selectedUser = User.objects.get(pk=int(data["userId"]))
+                if data["choice"] == "ban":
                     if selectedUser == studyroom.leader:
                         # js로 처리해서 작동안함. 이후에 ajax로 경고할 수 있는지 확인
                         context = {
-                            'room_id': room_id,
-                            'isCaptain': True,
-                            'users': studyroom.users.all(),
-                            'error_message': '스터디장은 추방할 수 없습니다',
+                            "room_id": room_id,
+                            "isCaptain": True,
+                            "users": studyroom.users.all(),
+                            "error_message": "스터디장은 추방할 수 없습니다",
                         }
-                        return render(request, 'studyrooms/studyroomManage.html', context)
+                        return render(
+                            request, "studyrooms/studyroomManage.html", context
+                        )
                     else:
                         selecedUser.study_room.remove(studyroom)
 
                         return HttpResponse("잘못된 접근")
             else:
                 context = {
-                    'room_id': room_id,
-                    'isCaptain': True,
-                    'users': studyroom.users.all(),
+                    "room_id": room_id,
+                    "isCaptain": True,
+                    "users": studyroom.users.all(),
                 }
-                return render(request, 'studyrooms/studyroomManage.html', context)
+                return render(request, "studyrooms/studyroomManage.html", context)
         # 스터디원 검증
         elif user in studyroom.users.all():
-            context['isCaptain'] = False
-            return render(request, 'studyrooms/studyroomManage.html', context)
+            context["isCaptain"] = False
+            return render(request, "studyrooms/studyroomManage.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomGoal(request, room_id):
     if request.user.is_authenticated:
         context = {
-            'room_id': room_id,
+            "room_id": room_id,
         }
         user = request.user
         studyroom = get_object_or_404(Studyroom, pk=room_id)
         # 스터디장 검증
         if studyroom.leader == user:
             context = {
-                'room_id': room_id,
-                'isCaptain': True,
-                'tasks': studyroom.progress_task_set.all()
+                "room_id": room_id,
+                "isCaptain": True,
+                "tasks": studyroom.progress_task_set.all(),
             }
-            if request.method == 'POST':
-                goalContent = request.POST.get('textarea-goal')
+            if request.method == "POST":
+                goalContent = request.POST.get("textarea-goal")
                 if len(goalContent) == 0:
-                    context.update({'error_message': '내용은 공백일 수 없습니다'})
-                    return render(request, 'studyrooms/studyroomGoal.html', context)
+                    context.update({"error_message": "내용은 공백일 수 없습니다"})
+                    return render(request, "studyrooms/studyroomGoal.html", context)
 
                 studyroom.progress_task_set.create(
-                    task=goalContent, taskNumber=studyroom.progress_task_set.count() + 1)
-                return render(request, 'studyrooms/studyroomGoal.html', context)
+                    task=goalContent, taskNumber=studyroom.progress_task_set.count() + 1
+                )
+                return render(request, "studyrooms/studyroomGoal.html", context)
             else:
-                return render(request, 'studyrooms/studyroomGoal.html', context)
+                return render(request, "studyrooms/studyroomGoal.html", context)
         # 스터디원 검증
         elif user in studyroom.users.all():
-            context['isCaptain'] = False
-            return render(request, 'studyrooms/studyroomGoal.html', context)
+            context["isCaptain"] = False
+            return render(request, "studyrooms/studyroomGoal.html", context)
         else:
-            return redirect('studyroom', room_id)
+            return redirect("studyroom", room_id)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomMake(request):
@@ -394,19 +451,21 @@ def studyroomMake(request):
             if form.is_valid():
                 studyroom = Studyroom()
                 studyroom.studyroom_name = form.cleaned_data["studyroom_name"]
-                studyroom.studyroom_classification = form.cleaned_data["studyroom_classification"]
+                studyroom.studyroom_classification = form.cleaned_data[
+                    "studyroom_classification"
+                ]
                 studyroom.leader = request.user
                 studyroom.save()
                 studyroom.users.add(request.user)
-                return redirect('studyroom', studyroom.pk)
+                return redirect("studyroom", studyroom.pk)
             else:
                 error = form.errors
-                context = ({'error_message': error})
-                return render(request, 'studyrooms/make.html', context)
+                context = {"error_message": error}
+                return render(request, "studyrooms/make.html", context)
         else:
-            return render(request, 'studyrooms/make.html')
+            return render(request, "studyrooms/make.html")
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomMy(request):
@@ -415,34 +474,28 @@ def studyroomMy(request):
         studyrooms = request.user.study_room.all()
 
         paginator = Paginator(studyrooms, STUDYROOMSPERPAGE)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         modifiedStudyrooms = paginator.get_page(page)
         pages = range(1, paginator.num_pages + 1)
 
-        context = {
-            'studyrooms': modifiedStudyrooms,
-            'pages': pages
-        }
-        return render(request, 'studyrooms/my.html', context)
+        context = {"studyrooms": modifiedStudyrooms, "pages": pages}
+        return render(request, "studyrooms/my.html", context)
     else:
-        return redirect('login')
+        return redirect("login")
 
 
 def studyroomJoin(request):
     if request.user.is_authenticated:
         STUDYROOMSPERPAGE = 20  # 페이지당 숫자
-        studyrooms = Studyroom.objects.all().order_by('-pk')
+        studyrooms = Studyroom.objects.all().order_by("-pk")
 
         paginator = Paginator(studyrooms, STUDYROOMSPERPAGE)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         modifiedStudyrooms = paginator.get_page(page)
         pages = range(1, paginator.num_pages + 1)
 
-        context = {
-            'studyrooms': modifiedStudyrooms,
-            'pages': pages
-        }
+        context = {"studyrooms": modifiedStudyrooms, "pages": pages}
 
-        return render(request, 'studyrooms/join.html', context)
+        return render(request, "studyrooms/join.html", context)
     else:
-        return redirect('login')
+        return redirect("login")

@@ -10,6 +10,3 @@ admin.site.register(Progress_rate)
 
 class StudyroomAdmin(admin.ModelAdmin):
     pass
-
-# test
-# Register your models here.
