@@ -17,7 +17,6 @@ urlpatterns = [
         name="studyroomTask",
     ),
     path("room/<int:room_id>/member", views.studyroom_member, name="studyroomMember"),
-    path("room/<int:room_id>/time", views.studyroomTime, name="studyroomTime"),
     path(
         "room/<int:room_id>/progress",
         views.studyroom_progress,

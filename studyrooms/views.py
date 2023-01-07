@@ -278,30 +278,6 @@ def studyroom_member(request, room_id):
         return redirect("login")
 
 
-def studyroomTime(request, room_id):
-    if request.user.is_authenticated:
-        context = {
-            "room_id": room_id,
-        }
-        user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-
-        if user in studyroom.users.all():
-            studyCount = 0
-            calendars = studyroom.calendar_set.all()
-            for calendar in calendars:
-                studyCount += calendar.todo_set.filter(writer=user).count()
-            context["study_count"] = studyCount
-            context["study_time"] = (
-                studyroom.progress_rate_set.all().get(user=user).totalHour
-            )
-            return render(request, "studyrooms/studyroomTime.html", context)
-        else:
-            return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
-
-
 def studyroom_progress(request, room_id):
     if request.user.is_authenticated:
 
