@@ -1,32 +1,27 @@
-{% extends 'base/base.html' %}
-{% block content %}
-<div class="main">
-    <div class="mt-32 p-8 w-96 border">
-        <div class="text-xl font-semibold mb-4">로그인</div>
-        <form class="" action="{% url 'login' %}" method="POST">
+{% extends 'base/base.html' %} {% block content %}
+<div class="container auth-form">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+    <div class="">
+        <h3>로그인</h3>
+        <form method="POST">
             {% csrf_token %}
-            <!-- 오류 출력 -->
-            <div class="mb-4">{{ error }}</div>
-            <!-- 오류 출력 끝 -->
-            <div class="mb-4">
-                <label for="l-id">아이디</label>
-                <input class="form__input" id="l-id" name="username"  type="text" autocomplete="off">
+            <div class="mb-3">
+                <label class="form-label" for="l-id">아이디</label>
+                <input class="form-control" id="l-id" name="username" type="text" autocomplete="off" required />
             </div>
-            <div class="mb-4">
-                <label for="l-password">패스워드</label>
-                <input class="form__input" id="l-password" name="password"  type="password">
+            <div class="mb-3">
+                <label class="form-label" for="l-password">패스워드</label>
+                <input class="form-control" id="l-password" name="password" type="password" required />
             </div>
-            <div class="mb-4">
-                <input id="l-checkbox" type="checkbox" name="remember_session">
+            <div class="mb-3">
+                <input id="l-checkbox" type="checkbox" class="form-check-input" name="remember_session" />
                 <label for="l-checkbox">로그인 상태 유지</label>
             </div>
-            <div class="mb-4 mb-4--zero">
-                <label for=""></label>
-                <input type="submit" class="form__button" value="로그인">
-            </div>
-            <div class="form__text">
-                <a class="" href="{% url 'found' %}">계정을 잊으셨나요?</a>
-                <a href="{% url 'signUp' %}">회원가입</a>
+            <div class="mb-3">
+                <input type="submit" class="btn btn-dark" value="로그인" />
+                <a class="float-end" href="{% url 'signUp' %}">회원가입</a>
             </div>
         </form>
     </div>

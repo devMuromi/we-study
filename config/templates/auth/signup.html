@@ -1,43 +1,40 @@
-{% extends 'base/base.html' %}
-{% block content %}
-<div class="main">
-    <div class="">
-        <h2>회원가입<h2>
-        <form action="" method="POST">
-            {% csrf_token %}
-            <div class="mb-4">
-                <label for="l-id">아이디</label>
-                <input class="form__input" id="l-id" type="text" name="username" autocomplete="off">
-            </div>
-            <div class="mb-4">
-                <label for="l-email">이메일</label>
-                <input class="form__input" id="l-email" type="email" name="email" placeholder="example@example.com">
-            </div>
-            <div class="mb-4">
-                <label for="l-password">비밀번호</label>
-                <input class="form__input" id="l-password" type="password" name="password">
-            </div>
-            <div class="mb-4">
-                <label for="l-password-confirm">비밀번호 확인</label>
-                <input class="form__input" id="l-password-confirm" type="password" name="confirm">
-            </div>
-            <div class="mb-4">
-                <label for="l-birth">생년월일</label>
-                <input class="form__input" id="l-birth" type="date" name="birth_date">
-            </div>
-            <div class="mb-4">
-                <label for="l-sex">성별</label>
-                <select class="form__input" id="l-sex" name="gender">
-                    <option value = "m">male</option>
-                    <option value = "f">female</option>
-                    <option value = "o">other</option>
-                </select>
-            </div>
-            <div class="">
-                <label for=""></label>
-                <input type="submit" class="form__button" value="회원가입">
-            </div>
-        </form>
-    </div>
+{% extends 'base/base.html' %} {% block content %}
+<div class="container auth-form">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+    <h3>회원가입</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label" for="l-id">아이디</label>
+            <input class="form-control" id="l-id" type="text" name="username" autocomplete="off" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="l-email">이메일</label>
+            <input class="form-control" id="l-email" type="email" name="email" placeholder="example@example.com" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="l-password">비밀번호</label>
+            <input class="form-control" id="l-password" type="password" name="password" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="l-password-confirm">비밀번호 확인</label>
+            <input class="form-control" id="l-password-confirm" type="password" name="confirm" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="l-job">직업</label>
+            <select class="form-select" id="l-job" name="job" required>
+                <option selected disabled>직업을 선택하세요</option>
+                {% for job in jobChoice %}
+                <option value="{{ job.value }}">{{ job.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <input type="submit" class="btn btn-dark" value="회원가입" />
+        </div>
+    </form>
 </div>
 {% endblock %}
