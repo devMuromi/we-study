@@ -1,0 +1,22 @@
+{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %}
+<div class="container auth-form">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+    <form action="{% url 'createStudyroom' %}" method="POST" onsubmit="return confirm('정말로 스터디룸을 만드시겠습니까?');">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label" for="l-name">스터디 이름</label>
+            <input class="form-control" name="name" type="text" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="l-description">스터디 소개</label>
+            <textarea class="form-control" id="l-description" name="description" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <input class="btn btn-outline-dark" type="submit" value="스터디 생성" />
+        </div>
+    </form>
+</div>
+
+{% endblock %}

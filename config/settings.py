@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "users",
     "studyrooms",
     "config",
-    "applications",
     "boards",
 ]
 
@@ -133,6 +132,6 @@ STATIC_URL = "/static/"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-TAILWIND_APP_NAME = "theme"
-
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+
+LOGIN_URL = "/auth/login/"

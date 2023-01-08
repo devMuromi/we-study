@@ -1,81 +1,95 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import *
-from users.models import *
-from applications.models import *
-from django.contrib import auth
-from django.core.paginator import Paginator
-from .forms import StudyroomForm, StudyForm
-from applications.models import *
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 import json
 import datetime
 import calendar
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.http import HttpResponse
+from .models import Studyroom, Task, Schedule, Study, StudyroomInfo, Application
+from users.models import User
+from .forms import StudyroomForm, StudyForm
 
 
-def studyroom(request, room_id):
-    if request.user.is_authenticated:
+@login_required()
+def studyroom_lobby(request):
+    STUDYROOMS_PER_PAGE = 18  # 페이지당 들어갈 스터디룸 숫자
+    my_studyrooms = request.user.studyroom.all().order_by("-last_update")
+    studyrooms = Studyroom.objects.all().order_by("-last_update")
+    for studyroom in studyrooms:
+        if studyroom in my_studyrooms:
+            studyrooms = studyrooms.exclude(pk=studyroom.pk)
+    # studyrooms = my_studyrooms.union(studyrooms)
+    # print(studyrooms)
+
+    paginator = Paginator(studyrooms, STUDYROOMS_PER_PAGE)
+    page = request.GET.get("page")
+    modified_studyrooms = paginator.get_page(page)
+    pages = range(1, paginator.num_pages + 1)
+
+    context = {
+        "myStudyrooms": None,
+        "studyrooms": modified_studyrooms,
+        "pages": pages,
+        "currentPage": 1 if page == None else int(page),
+    }
+    if page == None or page == "1":
+        context["myStudyrooms"] = my_studyrooms
+    return render(request, "studyrooms/lobby.html", context)
+
+
+@login_required()
+def create_studyroom(request):
+    if request.method == "GET":
+        return render(request, "studyrooms/create.html")
+    elif request.method == "POST":
         user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-
-        # 스터디룸 페이지
-        if user in studyroom.member.all():
-            taskCount = studyroom.progress_task_set.count()
-            averageProgressRate = (
-                0
-                if taskCount == 0
-                else round(
-                    sum(
-                        [
-                            progressRate.totalProgress
-                            for progressRate in studyroom.progress_rate_set.all()
-                        ]
-                    )
-                    / taskCount
-                    * 100,
-                    1,
-                )
-            )
-            context = {
-                "room_id": room_id,
-                "memberCount": studyroom.member.count(),
-                "studyroomName": studyroom.studyroom_name,
-                "totalStudyTime": sum(
-                    [
-                        progressRate.totalHour
-                        for progressRate in studyroom.progress_rate_set.all()
-                    ]
-                ),
-                "averageProgressRate": averageProgressRate,
-                "isLeader": user == studyroom.leader,
-            }
-            return render(request, "studyrooms/studyroom.html", context)
-        # 신청서 페이지
+        form = StudyroomForm(request.POST)
+        if form.is_valid():
+            studyroom = Studyroom.objects.create(**form.cleaned_data, leader=user)
+            studyroom.member.add(user)
+            return redirect("studyroom", studyroom.pk)
         else:
-            context = {
-                "studyName": studyroom.studyroom_name,
-                "studyCaptain": studyroom.leader.username,
-                "studyField": studyroom.studyroom_classification,
-                "studyParticipants": studyroom.member.count(),
-                "studyOpen": "공개범위가 이곳에 들어갑니다",
-                "isLeader": user == studyroom.leader,
-            }
-            if request.method == "POST":
-                studyroom = get_object_or_404(Studyroom, pk=room_id)
-                if studyroom.application.filter(userId=request.user).count() == 0:
-                    application = Application()
-                    application.userId = request.user
-                    application.studyroomId = studyroom
-                    application.text = request.POST["studyroom_classification"]
-                    application.save()
-                else:
-                    context["error"] = "이미 스터디룸 참여 요청을 보냈습니다"
-                    return render(request, "studyrooms/request.html", context)
-                return redirect("main")
-            else:
-                return render(request, "studyrooms/request.html", context)
+            return render(request, "studyrooms/create.html", {"error": form.errors})
+
+
+@login_required()
+def studyroom(request, room_id):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=room_id)
+    if user in studyroom.member.all():
+        context = {
+            "room_id": room_id,
+            "name": studyroom.name,
+            "memberCount": studyroom.member.count(),
+            # "totalStudyTime": sum(
+            #     [
+            #         progressRate.totalHour
+            #         for progressRate in studyroom.progress_rate_set.all()
+            #     ]
+            # ),
+            "averageProgressRate": 0,
+            "isLeader": user == studyroom.leader,
+        }
+        return render(request, "studyrooms/studyroom.html", context)
+    # 신청서 페이지
     else:
-        return redirect("login")
+        context = {
+            "name": studyroom.name,
+            "leader": studyroom.leader.username,
+            "memberCount": studyroom.member.count(),
+            "description": studyroom.description,
+        }
+        if studyroom.application.filter(user=user).count() > 0:
+            context["error"] = "이미 해당 스터디룸에 참여 신청을 했습니다"
+            return render(request, "studyrooms/request.html", context)
+        elif request.method == "GET":
+            return render(request, "studyrooms/request.html", context)
+        elif request.method == "POST":
+            application = Application.objects.create(
+                user=user, studyroom=studyroom, content=request.POST["application"]
+            )
+            return redirect("studyroomLobby")
 
 
 def studyroom_calendar(request, room_id):
@@ -438,57 +452,5 @@ def studyroomGoal(request, room_id):
             return render(request, "studyrooms/studyroomGoal.html", context)
         else:
             return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
-
-
-def studyroom_create(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            form = StudyroomForm(request.POST)
-            if form.is_valid():
-                studyroom = Studyroom()
-                studyroom.studyroom_name = form.cleaned_data["studyroom_name"]
-                studyroom.studyroom_classification = form.cleaned_data[
-                    "studyroom_classification"
-                ]
-                studyroom.leader = request.user
-                studyroom.save()
-                studyroom.member.add(request.user)
-                return redirect("studyroom", studyroom.pk)
-            else:
-                error = form.errors
-                context = {"error_message": error}
-                return render(request, "studyrooms/make.html", context)
-        else:
-            return render(request, "studyrooms/make.html")
-    else:
-        return redirect("login")
-
-
-def studyroom_lobby(request):
-    STUDYROOMS_PER_PAGE = 18  # 페이지당 들어갈 스터디룸 숫자
-    if request.user.is_authenticated:
-        my_studyrooms = request.user.study_room.all()
-        studyrooms = Studyroom.objects.all().order_by("-pk")
-        for studyroom in studyrooms:
-            if studyroom in my_studyrooms:
-                studyrooms = studyrooms.exclude(pk=studyroom.pk)
-
-        paginator = Paginator(studyrooms, STUDYROOMS_PER_PAGE)
-        page = request.GET.get("page")
-        modified_studyrooms = paginator.get_page(page)
-        pages = range(1, paginator.num_pages + 1)
-
-        context = {
-            "myStudyrooms": None,
-            "studyrooms": modified_studyrooms,
-            "pages": pages,
-            "currentPage": 1 if page == None else int(page),
-        }
-        if page == None or page == "1":
-            context["myStudyrooms"] = my_studyrooms
-
-        return render(request, "studyrooms/lobby.html", context)
     else:
         return redirect("login")

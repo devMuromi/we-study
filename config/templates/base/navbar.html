@@ -3,14 +3,12 @@
 <nav class="nav">
     <a class="nav__logo" href="{% url 'main' %}">We Study</a>
     <div class="nav__menu">
-        <a class="nav__link" href="{% url 'studyroomJoin' %}">스터디룸</a>
+        <a class="nav__link" href="{% url 'studyroomLobby' %}">스터디룸</a>
         <a class="nav__link" href="{% url 'myPage' %}">마이페이지</a>
         {% if user.is_authenticated != True %}
         <a class="nav__link" href="{% url 'login' %}">로그인</a>
         {% else %}
         <a class="nav__link" href="{% url 'logout' %}">{{ user.username }} (로그아웃)</a>
-        <!-- <details class="nav__link"><a class="nav-link" onclick="">{{ user.username }} (로그아웃)</a></span> -->
-
         {% endif %}
     </div>
 </nav>

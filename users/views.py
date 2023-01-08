@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from .models import User
 from django.contrib import auth
-from .forms import *
+from .forms import UserForm
 from django.conf import settings
 
 
@@ -46,7 +46,7 @@ def login(request):
             auth.login(request, user)
             if request.POST.get("remember_session", False):
                 settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-            return redirect("/")
+            return redirect(request.GET.get("next", "/"))
         else:
             return render(
                 request,
