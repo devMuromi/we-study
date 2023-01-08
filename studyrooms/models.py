@@ -45,8 +45,12 @@ class Study(models.Model):
 
 # 유저당 스터디룸에 하나씩 생기는 기록 모델. m2m_changed signal이 적용
 class StudyroomInfo(models.Model):
-    studyroom = models.ForeignKey(Studyroom, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    studyroom = models.ForeignKey(
+        Studyroom, on_delete=models.CASCADE, related_name="studyroom_info"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="studyroom_info"
+    )
     study_hours = models.IntegerField(default=0)
     study_progress = models.IntegerField(default=0)
 
