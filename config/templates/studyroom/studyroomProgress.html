@@ -1,38 +1,38 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %}
-<div class="main">
-    <div class="page">
-        {% include "studyrooms/studyroomMenu.html" %}
-        <div class="page__content">
-            <div style="margin: 8px">
-                <h3>전체 진행도</h3>
-                <div class="progress" role="progressbar" aria-label="Total Progress Rate" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar bg-info" style="width: {{totalProgressRate}}%">{{totalProgressRate}}%</div>
-                </div>
+{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %} {% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+<div class="studyroom-page">
+    {% include "studyroom/studyroomMenu.html" %}
+    <div class="studyroom-module">
+        <div>
+            <h3>전체 진행도</h3>
+            <div class="progress" role="progressbar" aria-label="Total Progress Rate" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar bg-info" style="width: {{ totalProgressRate }}%">{{ totalProgressRate }}%</div>
             </div>
-            <div style="margin: 8px">
-                <h3>나의 진행도</h3>
-                <div class="progress" role="progressbar" aria-label="My Progress Rate" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar bg-info" style="width: {{myProgressRate}}%">{{myProgressRate}}%</div>
-                </div>
-            </div>
-
-            <table class="border-collapse w-full">
-                <thead>
-                    <tr class="h-12 border-b border-gray-500">
-                        <th class="w-1/12 text-left" scope="col">#</th>
-                        <th class="w-11/12 text-left" scope="col">과제</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for task in tasks %}
-                    <tr class="h-12 border-b border-gray-200">
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ task.task }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
+        <div>
+            <h3>나의 진행도</h3>
+            <div class="progress" role="progressbar" aria-label="My Progress Rate" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar bg-info" style="width: {{ myProgressRate }}%">{{ myProgressRate }}%</div>
+            </div>
+        </div>
+
+        <table class="table table-hover">
+            <thead>
+                <tr class="">
+                    <th scope="col">#</th>
+                    <th scope="col">과제</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.task_number }}</td>
+                    <td>{{ task.content }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

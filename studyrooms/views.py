@@ -182,6 +182,41 @@ def studyroom_confirm(request, studyroom_id):
             return JsonResponse({"message": "알수 없는 오류가 발생했습니다"})
 
 
+@login_required()
+def studyroom_progress(request, studyroom_id):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    if not user in studyroom.member.all():
+        return redirect("/studyroom/" + str(studyroom_id))
+    if request.method == "GET":
+        tasks = studyroom.task_set.all()
+        my_complete_task_count = StudyroomInfo.objects.get(
+            studyroom=studyroom, user=user
+        ).study_progress
+        total_comlete_task_count = sum(
+            [
+                studyroomInfo.study_progress
+                for studyroomInfo in StudyroomInfo.objects.filter(studyroom=studyroom)
+            ]
+        )
+        context = {
+            "studyroomId": studyroom_id,
+            "isLeader": user == studyroom.leader,
+            "tasks": tasks,
+            "myProgressRate": 0
+            if tasks.count() == 0
+            else round(my_complete_task_count / tasks.count() * 100),
+            "totalProgressRate": 0
+            if tasks.count() == 0
+            else round(
+                total_comlete_task_count
+                / (tasks.count() * studyroom.member.count())
+                * 100
+            ),
+        }
+        return render(request, "studyroom/studyroomProgress.html", context)
+
+
 def studyroom_task(request, room_id, year, month, day):
     if request.user.is_authenticated:
         context = {
@@ -358,45 +393,6 @@ def studyroom_board(request, room_id):
         studyroom = get_object_or_404(Studyroom, pk=room_id)
         if user in studyroom.member.all():
             return redirect("board", "N", room_id)
-        else:
-            return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
-
-
-def studyroom_progress(request, room_id):
-    if request.user.is_authenticated:
-
-        user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-
-        if user in studyroom.member.all():
-            tasks = studyroom.progress_task_set.all()
-            jobs = studyroom.progress_rate_set.all()
-
-            total_progress_rate = (
-                0
-                if len(tasks or jobs) == 0
-                else round(
-                    sum([job.totalProgress for job in jobs])
-                    / len(tasks)
-                    / studyroom.member.count()
-                    * 100
-                )
-            )
-            my_progress_rate = round(
-                studyroom.progress_rate_set.get(user=user).totalProgress
-                / len(tasks)
-                * 100
-            )
-            context = {
-                "room_id": room_id,
-                "totalProgressRate": total_progress_rate,
-                "myProgressRate": my_progress_rate,
-                "tasks": tasks,
-                "isLeader": user == studyroom.leader,
-            }
-            return render(request, "studyrooms/studyroomProgress.html", context)
         else:
             return redirect("studyroom", room_id)
     else:
