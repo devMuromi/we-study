@@ -10,7 +10,7 @@
 
     {% if isLeader %}
     <li class="list-group-item list-group-item-warning">관리자 전용</li>
-
     <a href="{% url 'studyroomGoal' studyroomId %}" class="list-group-item list-group-item-action list-group-item-warning">스터디 목표 관리</a>
+    <a href="{% url 'studyroomConfirm' studyroomId %}" class="list-group-item list-group-item-action list-group-item-warning">스터디 참가 요청 확인</a>
     {% endif %}
 </div>

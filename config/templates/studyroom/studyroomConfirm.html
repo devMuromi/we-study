@@ -1,68 +1,78 @@
-{% extends 'base/base.html' %}
-{% block content %}
-{% include "base/navbar.html" %}
-<div class="flex flex-col items-center">
-    <div class="page">
-        {% include "studyrooms/studyroomMenu.html" %}
-        {% if isCaptain == False %}
-        <div class="page__content">
-            <div class="text-4xl font-semibold">
-                접근 권한이 없습니다
-            </div>
-        </div>
-        {% else %}
-        <div class="page__content">
-            <table class="border-collapse w-full">
-                <thead>
-                    <tr class="h-12 border-b border-gray-500">
-                        <th class="w-1/6 text-left" scope="col">아이디</th>
-                        <th class="w-4/6 text-left" scope="col">신청 내용</th>
-                        <th class="w-1/6 text-left" scope="col">수락 / 거절</th>
-                    </tr>
-                </thead>
-                <tbody>
+{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %} {% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+<div class="studyroom-page">
+    {% include "studyroom/studyroomMenu.html" %}
+    <div class="studyroom-module">
+        <table class="table table-hover">
+            <thead>
+                <tr class="">
+                    <th class="" scope="col">아이디</th>
+                    <th class="" scope="col">신청 내용</th>
+                    <th class="" scope="col">수락 / 거절</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for application in applications %}
-                    <tr class="h-12 border-b border-gray-200">
-                        <td>{{ application.userId }}</td>
-                        <td>{{ application.text }}</td>
-                        <td>
-                            <button class="confirm-button" data-id="{{ application.pk }}" data-choice="accept">수락</button>
-                            <button class="confirm-button" data-id="{{ application.pk }}" data-choice="decline">거절</button>
-                        </td>
-                    </tr>
+                <tr class="">
+                    <td>{{ application.username }}</td>
+                    <td>{{ application.content }}</td>
+                    <td>
+                        <button id="{{ application.userId }}" class="btn btn-sm btn-success" data-id="{{ application.pk }}" onclick="acceptApplication()">수락</button>
+                        <button id="{{ application.userId }}" class="btn btn-sm btn-danger" data-id="{{ application.pk }}" onclick="declineApplication()">거절</button>
+                    </td>
+                </tr>
                 {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
+            </tbody>
+        </table>
     </div>
 </div>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-    const congirmButtons = document.querySelectorAll('.confirm-button')
-    congirmButtons.forEach(function (button) {
-        button.addEventListener('click', function (event) {
-            const appId = event.target.dataset.id
-            const choice = event.target.dataset.choice
-            const data = {
-                appId: appId,
-                choice: choice
-            }
-            axios.defaults.xsrfCookieName = 'csrftoken'
-            axios.defaults.xsrfHeaderName = 'X-CSRFToken'
-            axios.post(`{% url 'studyroomConfirm' room_id  %}`,
-                JSON.stringify(data),
-                {
-                    headers: {
-                        "Content-Type": 'application/json'
-                    }
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
-            )
-
-                .then(request => {
-                    window.location.reload()
-                })
+            }
+        }
+        return cookieValue;
+    }
+    async function acceptApplication() {
+        const userId = event.target.id;
+        await fetch(``, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ userId: userId, isAccepted: true }),
         })
-    })
+            .then((res) => res.json())
+            .then((data) => {
+                alert(data.message);
+            });
+    }
+    async function declineApplication() {
+        const userId = event.target.id;
+        await fetch(``, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ userId: userId, isAccepted: false }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                alert(data.message);
+            });
+    }
 </script>
 {% endblock %}

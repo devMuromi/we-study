@@ -6,6 +6,9 @@ urlpatterns = [
     path("create/", views.create_studyroom, name="createStudyroom"),
     path("<int:studyroom_id>", views.studyroom, name="studyroom"),
     path("<int:studyroom_id>/member", views.studyroom_member, name="studyroomMember"),
+    path(
+        "<int:studyroom_id>/confirm", views.studyroom_confirm, name="studyroomConfirm"
+    ),
     path("<int:studyroom_id>/board", views.studyroom_board, name="studyroomBoard"),
     path(
         "<int:studyroom_id>/calendar",

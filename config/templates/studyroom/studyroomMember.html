@@ -65,30 +65,4 @@
             });
     }
 </script>
-<!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script>
-    const congirmButtons = document.querySelectorAll(".confirm-button");
-    congirmButtons.forEach(function (button) {
-        button.addEventListener("click", function (event) {
-            const userId = event.target.dataset.id;
-            const choice = event.target.dataset.choice;
-            const data = {
-                userId: userId,
-                choice: choice,
-            };
-            axios.defaults.xsrfCookieName = "csrftoken";
-            axios.defaults.xsrfHeaderName = "X-CSRFToken";
-            axios
-                .post(``, JSON.stringify(data), {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-
-                .then((request) => {
-                    window.location.reload();
-                });
-        });
-    });
-</script> -->
 {% endblock %}

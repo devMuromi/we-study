@@ -40,7 +40,7 @@ def studyroom_lobby(request):
 @login_required()
 def create_studyroom(request):
     if request.method == "GET":
-        return render(request, "studyrooms/create.html")
+        return render(request, "studyroom/create.html")
     elif request.method == "POST":
         user = request.user
         form = StudyroomForm(request.POST)
@@ -78,7 +78,7 @@ def studyroom(request, studyroom_id):
         if studyroom.application.filter(user=user).count() > 0:
             context["error"] = "이미 해당 스터디룸에 참여 신청을 했습니다"
             return render(request, "studyroom/request.html", context)
-        elif request.method == "GET":
+        if request.method == "GET":
             return render(request, "studyroom/request.html", context)
         elif request.method == "POST":
             Application.objects.create(
@@ -91,26 +91,26 @@ def studyroom(request, studyroom_id):
 def studyroom_member(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
-    if not user in studyroom.member.all():
+    raw_members = studyroom.member.all()
+    if not user in raw_members:
         return redirect("/studyroom/" + str(studyroom_id))
 
-    raw_members = studyroom.member.all()
-    members = list()
-    for member in raw_members:
-        members.append(
-            {
-                "id": member.pk,
-                "username": member.username,
-                "isLeader": member == studyroom.leader,
-                "studyHours": member.studyroom_info.get(
-                    studyroom=studyroom
-                ).study_hours,
-                "studyProgress": member.studyroom_info.get(
-                    studyroom=studyroom
-                ).study_progress,
-            }
-        )
     if request.method == "GET":
+        members = list()
+        for member in raw_members:
+            members.append(
+                {
+                    "id": member.pk,
+                    "username": member.username,
+                    "isLeader": member == studyroom.leader,
+                    "studyHours": member.studyroom_info.get(
+                        studyroom=studyroom
+                    ).study_hours,
+                    "studyProgress": member.studyroom_info.get(
+                        studyroom=studyroom
+                    ).study_progress,
+                }
+            )
         context = {
             "studyroomId": studyroom_id,
             "name": studyroom.name,
@@ -122,52 +122,64 @@ def studyroom_member(request, studyroom_id):
         return render(request, "studyroom/studyroomMember.html", context)
     elif request.method == "POST":
         try:
-            data = json.loads(request.body.decode())
-            print(data, type(data))
-            selected_user = User.objects.get(pk=int(data["userId"]))
-            studyroom_info = selected_user.studyroom_info.get(studyroom=studyroom)
-            if selected_user == studyroom.leader:
-                return JsonResponse({"message": "스터디장은 추방할 수 없습니다"})
+            if user == studyroom.leader:
+                data = json.loads(request.body.decode())
+                selected_user = User.objects.get(pk=int(data["userId"]))
+                studyroom_info = selected_user.studyroom_info.get(studyroom=studyroom)
+                if selected_user == studyroom.leader:
+                    return JsonResponse({"message": "스터디장은 추방할 수 없습니다"})
+                else:
+                    # 나중에 다시 확인
+                    studyroom.member.remove(selected_user)
+                    return JsonResponse({"message": "추방했습니다"})
             else:
-                # studyroom.member.remove(selected_user)
-                # studyroom_info.delete()
-                return JsonResponse({"message": "success"})
+                return JsonResponse({"message": "권한이 없습니다"})
+        except Exception as e:
+            print(e)
+            return JsonResponse({"message": "알 수 없는 오류가 발생했습니다"})
+
+
+@login_required()
+def studyroom_confirm(request, studyroom_id):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    if not user in studyroom.member.all() or user != studyroom.leader:
+        return redirect("/studyroom/" + str(studyroom_id))
+    if request.method == "GET":
+        raw_applications = studyroom.application.all()
+        applications = list()
+        for application in raw_applications:
+            applications.append(
+                {
+                    "userId": application.user.pk,
+                    "username": application.user.username,
+                    "content": application.content,
+                }
+            )
+        context = {
+            "studyroomId": studyroom_id,
+            "isLeader": user == studyroom.leader,
+            "applications": applications,
+        }
+        return render(request, "studyroom/studyroomConfirm.html", context)
+    elif request.method == "POST":
+        try:
+            if user == studyroom.leader:
+                data = json.loads(request.body.decode())
+                selected_user = User.objects.get(pk=int(data["userId"]))
+                is_accepted = data["isAccepted"]
+                if is_accepted:
+                    studyroom.application.get(user=selected_user).delete()
+                    studyroom.member.add(selected_user)
+                    return JsonResponse({"message": "수락했습니다"})
+                else:
+                    studyroom.application.get(user=selected_user).delete()
+                    return JsonResponse({"message": "거절했습니다"})
+            else:
+                return JsonResponse({"message": "권한이 없습니다"})
         except Exception as e:
             print(e)
             return JsonResponse({"message": "알수 없는 오류가 발생했습니다"})
-
-
-# def studyroomConfirm(request, room_id):
-
-#         if studyroom.leader == user:
-#             if request.method == "POST":
-#                 data = json.loads(request.body.decode())
-#                 application = Application.objects.get(pk=int(data["appId"]))
-#                 if data["choice"] == "accept":
-#                     application.userId.study_room.add(studyroom)
-#                     application.delete()
-
-#                 elif data["choice"] == "decline":
-#                     # 추후에 신청 거절/수락 여부를 알림등으로 알리는 기능 추가
-#                     application.delete()
-
-#                 return HttpResponse("잘못된 접근")
-#             else:
-#                 applications = studyroom.application.all()
-#                 context = {
-#                     "room_id": room_id,
-#                     "isCaptain": True,
-#                     "applications": applications,
-#                 }
-#                 return render(request, "studyrooms/studyroomConfirm.html", context)
-#         # 스터디원 검증
-#         elif user in studyroom.member.all():
-#             context["isCaptain"] = False
-#             return render(request, "studyrooms/studyroomConfirm.html", context)
-#         else:
-#             return redirect("studyroom", room_id)
-#     else:
-#         return redirect("login")
 
 
 def studyroom_task(request, room_id, year, month, day):
