@@ -217,6 +217,33 @@ def studyroom_progress(request, studyroom_id):
         return render(request, "studyroom/studyroomProgress.html", context)
 
 
+@login_required()
+def studyroom_goal(request, studyroom_id):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    if not user in studyroom.member.all() or user != studyroom.leader:
+        return redirect("/studyroom/" + str(studyroom_id))
+
+    tasks = studyroom.task_set.all()
+    context = {
+        "studyroomId": studyroom_id,
+        "isLeader": user == studyroom.leader,
+        "tasks": tasks,
+    }
+    if request.method == "GET":
+        return render(request, "studyroom/studyroomGoal.html", context)
+    elif request.method == "POST":
+        goal_content = request.POST.get("goal")
+        if len(goal_content) == 0:
+            context["error"] = "내용은 공백일 수 없습니다"
+            return render(request, "studyroom/studyroomGoal.html", context)
+
+        studyroom.task_set.create(
+            content=goal_content, task_number=studyroom.task_set.count() + 1
+        )
+        return render(request, "studyroom/studyroomGoal.html", context)
+
+
 def studyroom_task(request, room_id, year, month, day):
     if request.user.is_authenticated:
         context = {
@@ -393,42 +420,6 @@ def studyroom_board(request, room_id):
         studyroom = get_object_or_404(Studyroom, pk=room_id)
         if user in studyroom.member.all():
             return redirect("board", "N", room_id)
-        else:
-            return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
-
-
-def studyroomGoal(request, room_id):
-    if request.user.is_authenticated:
-        context = {
-            "room_id": room_id,
-        }
-        user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-        # 스터디장 검증
-        if studyroom.leader == user:
-            context = {
-                "room_id": room_id,
-                "isCaptain": True,
-                "tasks": studyroom.progress_task_set.all(),
-            }
-            if request.method == "POST":
-                goalContent = request.POST.get("textarea-goal")
-                if len(goalContent) == 0:
-                    context.update({"error_message": "내용은 공백일 수 없습니다"})
-                    return render(request, "studyrooms/studyroomGoal.html", context)
-
-                studyroom.progress_task_set.create(
-                    task=goalContent, taskNumber=studyroom.progress_task_set.count() + 1
-                )
-                return render(request, "studyrooms/studyroomGoal.html", context)
-            else:
-                return render(request, "studyrooms/studyroomGoal.html", context)
-        # 스터디원 검증
-        elif user in studyroom.member.all():
-            context["isCaptain"] = False
-            return render(request, "studyrooms/studyroomGoal.html", context)
         else:
             return redirect("studyroom", room_id)
     else:

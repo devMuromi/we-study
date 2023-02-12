@@ -9,6 +9,16 @@ urlpatterns = [
     path(
         "<int:studyroom_id>/confirm", views.studyroom_confirm, name="studyroomConfirm"
     ),
+    path(
+        "<int:studyroom_id>/progress",
+        views.studyroom_progress,
+        name="studyroomProgress",
+    ),
+    path(
+        "<int:studyroom_id>/goal",
+        views.studyroom_goal,
+        name="studyroomGoal",
+    ),
     path("<int:studyroom_id>/board", views.studyroom_board, name="studyroomBoard"),
     path(
         "<int:studyroom_id>/calendar",
@@ -20,13 +30,7 @@ urlpatterns = [
         views.studyroom_task,
         name="studyroomTask",
     ),
-    path(
-        "<int:studyroom_id>/progress",
-        views.studyroom_progress,
-        name="studyroomProgress",
-    ),
     # path(
     #     "<int:studyroom_id>/manage-request", views.studyroomConfirm, name="studyroomConfirm"
     # ),
-    path("<int:studyroom_id>/manage-task", views.studyroomGoal, name="studyroomGoal"),
 ]
