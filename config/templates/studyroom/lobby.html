@@ -1,62 +1,57 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %}
-<div class="">
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  <div class="">
     <div class="container-md">
-        {% if error %}
+      {% if error %}
         <div class="alert alert-danger" role="alert">{{ error }}</div>
-        {% endif %}
-        <div class="">
-            <h1>스터디룸 목록</h1>
-            <a class="btn btn-outline-dark" href="{% url 'createStudyroom' %}">스터디룸 만들기</a>
-        </div>
+      {% endif %}
+      <div class="">
+        <h1>스터디룸 목록</h1>
+        <a class="btn btn-outline-dark" href="{% url 'createStudyroom' %}">스터디룸 만들기</a>
+      </div>
+      <div class="row">
+        {% for studyroom in myStudyrooms %}
+          <div class="col-md-6 col-lg-4 col-xxl-3 joined-class-room">
+            <div class="card" style="width: 288px; margin: 16px">
+              <div class="card-body">
+                <h5 class="card-title">{{ studyroom.name }}
+                  <span class="badge bg-secondary">참가중</span></h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ studyroom.member.count }}명 참가중</h6>
+                <p class="card-text">{{ studyroom.description }}</p>
+                <a href="{% url 'studyroom' studyroom.pk %}" class="btn btn-outline-dark">참여하기</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        {% for studyroom in studyrooms %}
+          <div class="col-md-6 col-lg-4 col-xxl-3">
+            <div class="card" style="width: 18rem; margin: 16px">
+              <div class="card-body">
+                <h5 class="card-title">{{ studyroom.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ studyroom.member.count}}명 참가중</h6>
+                <p class="card-text">{{ studyroom.description }}</p>
+                <a href="{% url 'studyroom' studyroom.pk %}" class="btn btn-outline-dark">참여하기</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
         <div class="row">
-            {% for studyroom in myStudyrooms %}
-            <div class="col-md-6 col-lg-4 col-xxl-3 joined-class-room">
-                <div class="card" style="width: 288px; margin: 16px">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ studyroom.name }} <span class="badge bg-secondary">참가중</span></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ studyroom.member.count }}명 참가중</h6>
-                        <p class="card-text">{{ studyroom.description }}</p>
-                        <a href="{% url 'studyroom' studyroom.pk %}" class="btn btn-outline-dark">참여하기</a>
-                    </div>
-                </div>
+          <div class="btn-toolbar col" role="toolbar">
+            <div class="btn-group">
+              {% for page in pages %}
+                {% if currentPage == page %}
+                  <a href="{% url 'studyroomLobby' %}?page={{ page }}" class="btn btn-outline-dark active">{{page}}</a>
+                {% else %}
+                  <a href="{% url 'studyroomLobby' %}?page={{ page }}" class="btn btn-outline-dark">{{page}}</a>
+                {% endif %}
+              {% endfor %}
             </div>
-            {% endfor %} {% for studyroom in studyrooms %}
-            <div class="col-md-6 col-lg-4 col-xxl-3">
-                <div class="card" style="width: 18rem; margin: 16px">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ studyroom.name }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ studyroom.member.count}}명 참가중</h6>
-                        <p class="card-text">{{ studyroom.description }}</p>
-                        <a href="{% url 'studyroom' studyroom.pk %}" class="btn btn-outline-dark">참여하기</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-            <div class="row">
-                <div class="btn-toolbar col" role="toolbar">
-                    <div class="btn-group">
-                        {% for page in pages %} {% if currentPage == page %}
-                        <a href="{% url 'studyroomLobby' %}?page={{ page }}" class="btn btn-outline-dark active">{{page}}</a>
-                        {% else %}
-                        <a href="{% url 'studyroomLobby' %}?page={{ page }}" class="btn btn-outline-dark">{{page}}</a>
-                        {% endif %} {% endfor %}
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
-        {% endblock %}
-    </div>
+      </div>
+    {% endblock %}
+  </div>
 </div>
 
-<!-- <script>
-    joinedStudyrooms = document.getElementsByClassName("joined-class-room");
-    if (true) {
-        joinedStudyrooms.forEach((joinedStudyroom) => {
-            joinedStudyroom.style.display = "none";
-        });
-    } else {
-        joinedStudyrooms.forEach((joinedStudyroom) => {
-            joinedStudyroom.style.display = "block";
-        });
-    }
-</script> -->
+<!-- <script> joinedStudyrooms = document.getElementsByClassName("joined-class-room"); if (true) { joinedStudyrooms.forEach((joinedStudyroom) => { joinedStudyroom.style.display = "none"; }); } else { joinedStudyrooms.forEach((joinedStudyroom) => { joinedStudyroom.style.display = "block"; }); } </script> -->

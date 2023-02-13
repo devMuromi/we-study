@@ -1,27 +1,30 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %}
-<div class="container auth-form shadow-sm">
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  <div class="container auth-form shadow-sm">
     {% if error %}
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
+      <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}
     <div class="d-flex justify-content-between mb-3">
-        <h2>{{ name }}</h2>
-        <h7 class="text-secondary">{{ leader }}등 {{ memberCount }}명 참가중</h7>
+      <h2>{{ name }}</h2>
+      <h7 class="text-secondary">{{ leader }}등
+        {{ memberCount }}명 참가중</h7>
     </div>
     <div class="mb-3">{{ description }}</div>
     <form method="POST">
-        {% csrf_token %}
-        <div class="form-floating mb-3">
-            {% if error %}
-            <textarea disabled class="form-control" placeholder="이곳에 신청서를 작성해주세요" name="application" id="l-application" style="height: 100px"></textarea>
-            {% else %}
-            <textarea class="form-control" placeholder="이곳에 신청서를 작성해주세요" name="application" id="l-application" style="height: 100px"></textarea>
-            {% endif %}
-            <label for="l-application">신청서 작성</label>
-        </div>
-        <div class="mb-3">
-            <label for=""></label>
-            <input class="btn btn-outline-dark" type="submit" value="신청하기" />
-        </div>
+      {% csrf_token %}
+      <div class="form-floating mb-3">
+        {% if error %}
+          <textarea disabled="disabled" class="form-control" placeholder="이곳에 신청서를 작성해주세요" name="application" id="l-application" style="height: 100px"></textarea>
+        {% else %}
+          <textarea class="form-control" placeholder="이곳에 신청서를 작성해주세요" name="application" id="l-application" style="height: 100px"></textarea>
+        {% endif %}
+        <label for="l-application">신청서 작성</label>
+      </div>
+      <div class="mb-3">
+        <label for=""></label>
+        <input class="btn btn-outline-dark" type="submit" value="신청하기"/>
+      </div>
     </form>
-</div>
+  </div>
 {% endblock %}

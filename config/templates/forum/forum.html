@@ -1,52 +1,58 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %}
-<div class="main">
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  <div class="main">
     <div class="page">
-        {% include "studyrooms/studyroomMenu.html" %}
-        <div class="page__content">
-            <div class="text-2xl font-semibold mb-3">{{ forumType }}</div>
-            {% include "studyrooms/studyroomBoard.html" %}
-            <!--일단 타이틀로-->
-            <div class="flex justify-between">
-                <form class="" action="{% url 'postsearch' room_id board_thema %}" method="get">
-                    {% csrf_token %}
-                    <select name="selectTag">
-                        <option value="title" selected>글제목</option>
-                        <option value="content">글내용</option>
-                        <option value="author">작성자</option>
-                    </select>
-                    <input type="text" name="searchWord" />
-                    <input class="p-3 rounded bg-gray-200 hover:bg-gray-300" type="submit" value="검색" />
-                </form>
-                <a href="{% url 'postnew' room_id board_thema %}" class="p-3 rounded bg-gray-200 hover:bg-gray-300">글쓰기</a>
-            </div>
+      {% include "studyrooms/studyroomMenu.html" %}
+      <div class="page__content">
+        <div class="text-2xl font-semibold mb-3">{{ forumType }}</div>
+        {% include "studyrooms/studyroomBoard.html" %}
+        <!--일단 타이틀로-->
+        <div class="flex justify-between">
+          <form class="" action="{% url 'postsearch' room_id board_thema %}" method="get">
+            {% csrf_token %}
+            <select name="selectTag">
+              <option value="title" selected="selected">글제목</option>
+              <option value="content">글내용</option>
+              <option value="author">작성자</option>
+            </select>
+            <input type="text" name="searchWord"/>
+            <input class="p-3 rounded bg-gray-200 hover:bg-gray-300" type="submit" value="검색"/>
+          </form>
+          <a href="{% url 'postnew' room_id board_thema %}" class="p-3 rounded bg-gray-200 hover:bg-gray-300">글쓰기</a>
+        </div>
 
-            <div>
-                <table class="border-collapse w-full">
-                    <thead>
-                        <tr class="h-12 border-b border-gray-500">
-                            <th class="text-left" scope="col">제목</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for post in page_posts %}
-                        <tr class="h-12 border-b border-gray-200">
-                            <td><a href="{% url 'detail' room_id post.id %}">{{post.title}}</a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div>
+          <table class="border-collapse w-full">
+            <thead>
+              <tr class="h-12 border-b border-gray-500">
+                <th class="text-left" scope="col">제목</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for post in page_posts %}
+                <tr class="h-12 border-b border-gray-200">
+                  <td>
+                    <a href="{% url 'detail' room_id post.id %}">{{post.title}}</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
-            <div class="mt-8 flex justify-center">
-                {%if page_posts.has_previous%}
-                <a href="?page={{page_posts.previous_page_number}}" class="pagination__block">이전</a>
-                {%endif%} {%for i in page_posts.paginator.page_range%}
-                <a class="pagination__block" href="?page={{i}}">{{i}}</a>
-                {%endfor%} {%if page_posts.has_next%}
+        <div class="mt-8 flex justify-center">
+          {%if page_posts.has_previous%}
+            <a href="?page={{page_posts.previous_page_number}}" class="pagination__block">이전</a>
+            {%endif%}
+            {%for i in page_posts.paginator.page_range%}
+              <a class="pagination__block" href="?page={{i}}">{{i}}</a>
+              {%endfor%}
+              {%if page_posts.has_next%}
                 <a href="?page={{page_posts.next_page_number}}" class="pagination__block">다음</a>
                 {%endif%}
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</div>
-{% endblock %}
+      {% endblock %}

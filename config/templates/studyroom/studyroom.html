@@ -1,33 +1,36 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %} {% if error %}
-<div class="alert alert-danger" role="alert">{{ error }}</div>
-{% endif %}
-<div class="studyroom-page">
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
     {% include "studyroom/studyroomMenu.html" %}
     <div class="studyroom-module">
-        <div class="profile">
-            <div class="profile__header">
-                <span class="profile__header__main">{{ name }}</span>
-                <span class="profile__header__sub"></span>
-            </div>
-            <div class="profile__box profile__box--multi">
-                <span class="profile__box__main">
-                    <a href="{% url 'studyroomMember' studyroomId %}">멤버</a>
-                </span>
-                <a href="{% url 'studyroomMember' studyroomId %}" class="profile__box__sub">{{ memberCount }}명</a>
-            </div>
-            <div class="profile__box profile__box--multi">
-                <span class="profile__box__main">
-                    <a href="{% url 'studyroomProgress' studyroomId %}">평균 진도율</a>
-                </span>
-                <a href="{% url 'studyroomProgress' studyroomId %}" class="profile__box__sub">%</a>
-            </div>
-            <div class="profile__box profile__box--multi">
-                <span class="profile__box__main">
-                    <a href="">총학습 시간</a>
-                </span>
-                <a href="" class="profile__box__sub">시간</a>
-            </div>
+      <div class="profile">
+        <div class="profile__header">
+          <span class="profile__header__main">{{ name }}</span>
+          <span class="profile__header__sub"></span>
         </div>
+        <div class="profile__box profile__box--multi">
+          <span class="profile__box__main">
+            <a href="{% url 'studyroomMember' studyroomId %}">멤버</a>
+          </span>
+          <a href="{% url 'studyroomMember' studyroomId %}" class="profile__box__sub">{{ memberCount }}명</a>
+        </div>
+        <div class="profile__box profile__box--multi">
+          <span class="profile__box__main">
+            <a href="{% url 'studyroomProgress' studyroomId %}">평균 진도율</a>
+          </span>
+          <a href="{% url 'studyroomProgress' studyroomId %}" class="profile__box__sub">%</a>
+        </div>
+        <div class="profile__box profile__box--multi">
+          <span class="profile__box__main">
+            <a href="">총학습 시간</a>
+          </span>
+          <a href="" class="profile__box__sub">시간</a>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}

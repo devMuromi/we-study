@@ -1,16 +1,16 @@
 <div class="list-group list-group-flush" style="width: 256px">
-    <h2>스터디룸</h2>
-    <a href="{% url 'studyroom' studyroomId %}" class="list-group-item list-group-item-action">스터디룸 홈</a>
+  <h2>스터디룸</h2>
+  <a href="{% url 'studyroom' studyroomId %}" class="list-group-item list-group-item-action">스터디룸 홈</a>
 
-    <a href="{% url 'studyroomCalendar' studyroomId %}" class="list-group-item list-group-item-action">스터디룸 달력</a>
-    <a href="{% url 'studyroomBoard' studyroomId  %}" class="list-group-item list-group-item-action">게시판</a>
+  <a href="{% url 'studyroomCalendar' studyroomId %}" class="list-group-item list-group-item-action">스터디룸 달력</a>
+  <a href="{% url 'studyroomBoard' studyroomId  %}" class="list-group-item list-group-item-action">게시판</a>
 
-    <a href="{% url 'studyroomMember' studyroomId %}" class="list-group-item list-group-item-action">참여 멤버</a>
-    <a href="{% url 'studyroomProgress' studyroomId %}" class="list-group-item list-group-item-action">스터디 목표</a>
+  <a href="{% url 'studyroomMember' studyroomId %}" class="list-group-item list-group-item-action">참여 멤버</a>
+  <a href="{% url 'studyroomProgress' studyroomId %}" class="list-group-item list-group-item-action">스터디 목표</a>
 
-    {% if isLeader %}
+  {% if isLeader %}
     <li class="list-group-item list-group-item-warning">관리자 전용</li>
     <a href="{% url 'studyroomConfirm' studyroomId %}" class="list-group-item list-group-item-action list-group-item-warning">스터디 참가 요청 확인</a>
     <a href="{% url 'studyroomGoal' studyroomId %}" class="list-group-item list-group-item-action list-group-item-warning">스터디 목표 관리</a>
-    {% endif %}
+  {% endif %}
 </div>

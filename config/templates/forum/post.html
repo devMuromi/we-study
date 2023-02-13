@@ -1,53 +1,51 @@
 {% extends 'base/base.html' %}
 {% block content %}
-{% include "base/navbar.html" %}
-<script>
+  {% include "base/navbar.html" %}
+  <script>
     const message = "{{message}}";
-    if (message){
-        alert(message);
+    if (message) {
+      alert(message);
     }
-</script>
-<div class="main">
+  </script>
+  <div class="main">
     <div class="page">
-        {% include "studyrooms/studyroomMenu.html" %}
-        <div class="page__content">
-            {% include "studyrooms/studyroomBoard.html" %}
-            <div class="flex justify-between border-b border-gray-500 pb-2">
-                <div class="text-xl">{{post.title}}</div>
-                <div>{{post.author.username}} | {{post.create_date}}</div>
-            </div>
-            <div class="border-b border-gray-500 py-2 mb-4 break-words">{{post.content}}</div>
-            <div class="mb-4 text-right">
-                <a href="{% url 'board' post.thema post.studyroom.id %}" class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300">게시판</a>
-                <a href="{% url 'postedit' room_id post.id %}" class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300">글수정</a>
-                <a href="{% url 'postdelete' room_id post.id %}" class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300">글삭제</a>
-            </div>
-
-
-            <h3 class="mb-1">댓글</h3>
-            <form action="{% url 'detail' room_id post.id %}" method ="POST">
-                {% csrf_token %}
-                <input class="w-full mb-1 h-16" type = "text" name = "content" />
-                <input class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300" type = "submit" value="댓글 작성"/>
-            </form>
-            <div class="mt-4">
-            {% for comment in comments %}
-                <div class="border-t border-gray-500 py-1 flex">
-                    <div class="mr-2 w-2/12">{{comment.author}}</div>
-                    <div class="break-words mr-2 w-9/12">{{comment.content}}</div>
-                    {% if comment.author == request.user %}
-                    <div class="w-1/12 text-right">
-                        <a href="{% url 'commentdelete' room_id post.id comment.id %}">X</a>
-                    </div>
-                </div>
-                {% endif %}
-            {% endfor %}
-            </div>
+      {% include "studyrooms/studyroomMenu.html" %}
+      <div class="page__content">
+        {% include "studyrooms/studyroomBoard.html" %}
+        <div class="flex justify-between border-b border-gray-500 pb-2">
+          <div class="text-xl">{{post.title}}</div>
+          <div>{{post.author.username}}
+            |
+            {{post.create_date}}</div>
         </div>
+        <div class="border-b border-gray-500 py-2 mb-4 break-words">{{post.content}}</div>
+        <div class="mb-4 text-right">
+          <a href="{% url 'board' post.thema post.studyroom.id %}" class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300">게시판</a>
+          <a href="{% url 'postedit' room_id post.id %}" class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300">글수정</a>
+          <a href="{% url 'postdelete' room_id post.id %}" class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300">글삭제</a>
+        </div>
+
+        <h3 class="mb-1">댓글</h3>
+        <form action="{% url 'detail' room_id post.id %}" method="POST">
+          {% csrf_token %}
+          <input class="w-full mb-1 h-16" type="text" name="content"/>
+          <input class="p-3 w-24 rounded bg-gray-200 hover:bg-gray-300" type="submit" value="댓글 작성"/>
+        </form>
+        <div class="mt-4">
+          {% for comment in comments %}
+            <div class="border-t border-gray-500 py-1 flex">
+              <div class="mr-2 w-2/12">{{comment.author}}</div>
+              <div class="break-words mr-2 w-9/12">{{comment.content}}</div>
+              {% if comment.author == request.user %}
+                <div class="w-1/12 text-right">
+                  <a href="{% url 'commentdelete' room_id post.id comment.id %}">X</a>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
     </div>
 
-
-
-
-</div>
+  </div>
 {% endblock %}

@@ -1,45 +1,48 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %} {% if error %}
-<div class="alert alert-danger" role="alert">{{ error }}</div>
-{% endif %}
-<div class="studyroom-page">
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
     {% include "studyroom/studyroomMenu.html" %}
     <div class="studyroom-module">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">과제</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for task in tasks %}
-                <tr>
-                    <td>{{ task.task_number }}</td>
-                    <td>{{ task.content }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-floating mb-3">
-                    <textarea class="form-control" placeholder="이곳에 목표를 작성해주세요" name="goal" id="l-application" style="height: 100px"></textarea>
-                    <label for="l-application">목표 추가</label>
-                </div>
-                <div class="mb-3">
-                    <input class="btn btn-outline-dark" type="submit" value="추가" />
-                </div>
-            </form>
-        </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">과제</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+            <tr>
+              <td>{{ task.task_number }}</td>
+              <td>{{ task.content }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="form-floating mb-3">
+            <textarea class="form-control" placeholder="이곳에 목표를 작성해주세요" name="goal" id="l-application" style="height: 100px"></textarea>
+            <label for="l-application">목표 추가</label>
+          </div>
+          <div class="mb-3">
+            <input class="btn btn-outline-dark" type="submit" value="추가"/>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
-<script>
+  </div>
+  <script>
     function addGoalBtnClick() {
-        var addGoal = document.getElementById("add-goal");
-        var addGoalButton = document.getElementById("add-goal-button");
-        addGoal.style.display = "block";
-        addGoalButton.style.display = "none";
+      var addGoal = document.getElementById("add-goal");
+      var addGoalButton = document.getElementById("add-goal-button");
+      addGoal.style.display = "block";
+      addGoalButton.style.display = "none";
     }
-</script>
+  </script>
 {% endblock %}

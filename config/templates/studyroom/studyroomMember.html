@@ -1,68 +1,73 @@
-{% extends 'base/base.html' %} {% block content %} {% include "base/navbar.html" %} {% if error %}
-<div class="alert alert-danger" role="alert">{{ error }}</div>
-{% endif %}
-<div class="studyroom-page">
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
     {% include "studyroom/studyroomMenu.html" %}
     <div class="studyroom-module">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">이름</th>
-                    <th scope="col">공부 시간</th>
-                    <th scope="col">진행률</th>
-                    {% if isLeader %}
-                    <th scope="col">작업</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for member in members %}
-                <tr>
-                    <td>{{ member.username }}</td>
-                    <td>{{ member.studyHours }}</td>
-                    <td>{{ member.studyProgress }}</td>
-                    {% if isLeader %}
-                    <td>
-                        <button id="{{ member.id }}" class="btn btn-sm btn-danger" onclick="kickMember()">추방</button>
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">이름</th>
+            <th scope="col">공부 시간</th>
+            <th scope="col">진행률</th>
+            {% if isLeader %}
+              <th scope="col">작업</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for member in members %}
+            <tr>
+              <td>{{ member.username }}</td>
+              <td>{{ member.studyHours }}</td>
+              <td>{{ member.studyProgress }}</td>
+              {% if isLeader %}
+                <td>
+                  <button id="{{ member.id }}" class="btn btn-sm btn-danger" onclick="kickMember()">추방</button>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-</div>
-<script>
+  </div>
+  <script>
     function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            var cookies = document.cookie.split(";");
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === name + "=") {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        var cookies = document
+          .cookie
+          .split(";");
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
         }
-        return cookieValue;
+      }
+      return cookieValue;
     }
 
     async function kickMember() {
-        const userId = event.target.id;
-        await fetch(``, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken"),
-            },
-            body: JSON.stringify({ userId: userId }),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                alert(data.message);
-            });
+      const userId = event.target.id;
+      await fetch(``, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({userId: userId})
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message);
+        });
     }
-</script>
+  </script>
 {% endblock %}

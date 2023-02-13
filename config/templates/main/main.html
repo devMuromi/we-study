@@ -1,12 +1,15 @@
-{% extends 'base/base.html' %} {% load static %} {% block content %} {% include "base/navbar.html" %}
-<div class="lobby">
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  <div class="lobby">
     <a href="{% url 'studyroomLobby' %}" class="lobby__box">
-        <img src="{% static 'img/main_menu_join.png' %}" />
-        <div class="lobby__name">스터디룸</div>
+      <img src="{% static 'img/main_menu_join.png' %}"/>
+      <div class="lobby__name">스터디룸</div>
     </a>
     <a href="{% url 'myPage' %}" class="lobby__box">
-        <img src="{% static 'img/main_menu_mypage.png' %}" />
-        <div class="lobby__name">마이페이지</div>
+      <img src="{% static 'img/main_menu_mypage.png' %}"/>
+      <div class="lobby__name">마이페이지</div>
     </a>
-</div>
+  </div>
 {% endblock %}

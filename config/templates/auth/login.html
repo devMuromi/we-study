@@ -1,29 +1,30 @@
-{% extends 'base/base.html' %} {% block content %}
-<div class="container auth-form shadow-sm">
+{% extends 'base/base.html' %}
+{% block content %}
+  <div class="container auth-form shadow-sm">
     {% if error %}
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
+      <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}
     <div class="">
-        <h3>로그인</h3>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label" for="l-id">아이디</label>
-                <input class="form-control" id="l-id" name="username" type="text" autocomplete="off" required />
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="l-password">패스워드</label>
-                <input class="form-control" id="l-password" name="password" type="password" required />
-            </div>
-            <div class="mb-3">
-                <input id="l-checkbox" type="checkbox" class="form-check-input" name="remember_session" />
-                <label for="l-checkbox">로그인 상태 유지</label>
-            </div>
-            <div class="mb-3">
-                <input type="submit" class="btn btn-dark" value="로그인" />
-                <a class="float-end" href="{% url 'signUp' %}">회원가입</a>
-            </div>
-        </form>
+      <h3>로그인</h3>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label" for="l-id">아이디</label>
+          <input class="form-control" id="l-id" name="username" type="text" autocomplete="off" required="required"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="l-password">패스워드</label>
+          <input class="form-control" id="l-password" name="password" type="password" required="required"/>
+        </div>
+        <div class="mb-3">
+          <input id="l-checkbox" type="checkbox" class="form-check-input" name="remember_session"/>
+          <label for="l-checkbox">로그인 상태 유지</label>
+        </div>
+        <div class="mb-3">
+          <input type="submit" class="btn btn-dark" value="로그인"/>
+          <a class="float-end" href="{% url 'signUp' %}">회원가입</a>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
 {% endblock %}
