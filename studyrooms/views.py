@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from .models import Studyroom, Task, Schedule, Study, StudyroomInfo, Application
+from .models import Studyroom, Task, Study, StudyroomInfo, Application
 from users.models import User
 from .forms import StudyroomForm, StudyForm
 
@@ -244,6 +244,75 @@ def studyroom_goal(request, studyroom_id):
         return render(request, "studyroom/studyroomGoal.html", context)
 
 
+@login_required()
+def studyroom_calendar(request, studyroom_id):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    if not user in studyroom.member.all():
+        return redirect("/studyroom/" + str(studyroom_id))
+
+    if request.method == "GET":
+        # get PARAM에서 연/월 가져오기
+        today = datetime.date.today()
+        try:
+            date = request.GET["date"]
+            year, month = map(int, date.split("-"))
+        except:
+            year, month = today.year, today.month
+
+        first_Weekday, last_day = calendar.monthrange(year, month)
+
+        last_month = (
+            str(year if month != 1 else year - 1)
+            + "-"
+            + str(month - 1 if month != 1 else 12)
+        )
+        next_month = (
+            str(year if month != 12 else year + 1)
+            + "-"
+            + str(month + 1 if month != 12 else 1)
+        )
+
+        weeks = [
+            [{}, {}, {}, {}, {}, {}, {}],
+            [{}, {}, {}, {}, {}, {}, {}],
+            [{}, {}, {}, {}, {}, {}, {}],
+            [{}, {}, {}, {}, {}, {}, {}],
+            [{}, {}, {}, {}, {}, {}, {}],
+            [{}, {}, {}, {}, {}, {}, {}],
+        ]
+
+        j = first_Weekday + 1
+        for i in range(last_day):
+            weeks[j // 7][j % 7]["date"] = i + 1
+            current_date = datetime.date(year, month, i + 1)
+            weeks[j // 7][j % 7]["studies"] = Study.objects.filter(
+                studyroom=studyroom, date=current_date
+            )
+            if current_date <= today:
+                weeks[j // 7][j % 7]["isPast"] = True
+            j += 1
+        # remove unused weeks
+        for i in range(5, 3, -1):
+            print(i)
+            if not weeks[i][0]:
+                weeks.pop()
+
+        context = {
+            "studyroomId": studyroom_id,
+            "isLeader": user == studyroom.leader,
+            "year": year,
+            "month": month,
+            "weeks": weeks,
+            "lastMonth": last_month,
+            "nextMonth": next_month,
+        }
+        print(weeks)
+        return render(request, "studyroom/studyroomCalendar.html", context)
+    else:
+        return redirect("studyroom", studyroom_id)
+
+
 def studyroom_task(request, room_id, year, month, day):
     if request.user.is_authenticated:
         context = {
@@ -336,78 +405,6 @@ def studyroom_task(request, room_id, year, month, day):
                 except ValueError:
                     context["error_message"] = "날짜가 잘못되었습니다"
                 return render(request, "studyrooms/studyroomTask.html", context)
-        else:
-            return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
-
-
-def studyroom_calendar(request, room_id):
-    if request.user.is_authenticated:
-        context = {
-            "room_id": room_id,
-        }
-        user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-
-        if user in studyroom.member.all():
-            today = datetime.date.today()
-            todayMonth = today.month
-            todayYear = today.year
-
-            # get PARAM에서 연/월 가져오기
-            try:
-                date = request.GET["date"]
-                year, month = map(int, date.split("-"))
-            except:
-                year, month = todayYear, todayMonth
-
-            startWeekday, lastDay = calendar.monthrange(year, month)
-
-            lastMonth = (
-                str(year if month != 1 else year - 1)
-                + "-"
-                + str(month - 1 if month != 1 else 12)
-            )
-            nextMonth = (
-                str(year if month != 12 else year + 1)
-                + "-"
-                + str(month + 1 if month != 12 else 1)
-            )
-
-            weeks = [
-                [{}, {}, {}, {}, {}, {}, {}],
-                [{}, {}, {}, {}, {}, {}, {}],
-                [{}, {}, {}, {}, {}, {}, {}],
-                [{}, {}, {}, {}, {}, {}, {}],
-                [{}, {}, {}, {}, {}, {}, {}],
-                [{}, {}, {}, {}, {}, {}, {}],
-            ]
-
-            j = startWeekday + 1
-            for i in range(lastDay):
-                weeks[j // 7][j % 7]["day"] = i + 1
-                selectedDate = datetime.date(year, month, i + 1)
-                dayCalendar, isCalendarCreated = Calendar.objects.get_or_create(
-                    studyroom=studyroom, date=selectedDate
-                )
-
-                todos = dayCalendar.todo_set.all()
-                todoList = [todo.writer for todo in todos]
-                weeks[j // 7][j % 7]["tasks"] = todoList
-
-                j += 1
-
-            context = {
-                "room_id": room_id,
-                "weeks": weeks,
-                "year": year,
-                "month": month,
-                "lastMonth": lastMonth,
-                "nextMonth": nextMonth,
-                "isLeader": user == studyroom.leader,
-            }
-            return render(request, "studyrooms/studyroomCalendar.html", context)
         else:
             return redirect("studyroom", room_id)
     else:

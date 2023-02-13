@@ -19,12 +19,12 @@ urlpatterns = [
         views.studyroom_goal,
         name="studyroomGoal",
     ),
-    path("<int:studyroom_id>/board", views.studyroom_board, name="studyroomBoard"),
     path(
         "<int:studyroom_id>/calendar",
         views.studyroom_calendar,
         name="studyroomCalendar",
     ),
+    path("<int:studyroom_id>/board", views.studyroom_board, name="studyroomBoard"),
     path(
         "<int:studyroom_id>/calendar/<int:year>-<int:month>-<int:day>",
         views.studyroom_task,

@@ -26,13 +26,9 @@ class Task(models.Model):
     content = models.TextField()
 
 
-class Schedule(models.Model):
+class Study(models.Model):
     studyroom = models.ForeignKey(Studyroom, on_delete=models.CASCADE)
     date = models.DateField()
-
-
-class Study(models.Model):
-    calendar = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField(null=True)
     learning_time = models.IntegerField()

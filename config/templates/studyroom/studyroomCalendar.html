@@ -1,240 +1,73 @@
 {% extends 'base/base.html' %}
 {% block content %}
-{% include "base/navbar.html" %}
-<div class="main">
-    <div class="page">
-        {% include "studyrooms/studyroomMenu.html" %}
-        <div class="page__content">
-            <div class="wrapper bg-white rounded shadow w-full ">
-                <div class="header flex justify-between border-b p-2">
-                    <span class="text-lg font-bold">
-                        {{ year }} {{ month }}
-                    </span>
-                    <div class="buttons">
-                        <button class="p-1">
-                            <a href="{% url 'studyroomCalendar' room_id %}?date={{ lastMonth }}">
-                                <svg width="1em" fill="gray" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-left-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                    <path fill-rule="evenodd" d="M8.354 11.354a.5.5 0 0 0 0-.708L5.707 8l2.647-2.646a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708 0z" />
-                                    <path fill-rule="evenodd" d="M11.5 8a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 .5-.5z" />
-                                </svg>
-                            </a>
-                        </button>
-                        <button class="p-1">
-                            <a href="{% url 'studyroomCalendar' room_id %}?date={{ nextMonth }}">
-                                <svg width="1em" fill="gray" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-right-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                    <path fill-rule="evenodd" d="M7.646 11.354a.5.5 0 0 1 0-.708L10.293 8 7.646 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0z" />
-                                    <path fill-rule="evenodd" d="M4.5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z" />
-                                </svg>
-                            </a>
-                        </button>
-                    </div>
-                </div>
-                <table class="w-full">
-                    <thead class="">
-                        <tr>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Sun</span>
-                            </th>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Mon</span>
-                            </th>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Tue</span>
-                            </th>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Wed</span>
-                            </th>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Thu</span>
-                            </th>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Fri</span>
-                            </th>
-                            <th class="p-2 border-r lg:h-10 w-24 xl:text-sm text-xs">
-                                <span class="">Sat</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="">
-            
-                        {% for week in weeks %}
-                        <tr class="text-center h-20">
-                            {% if week.0.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.0.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.0.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.0.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            {% if week.1.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.1.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.1.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.1.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            {% if week.2.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.2.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.2.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.2.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            {% if week.3.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.3.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.3.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.3.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            {% if week.4.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.4.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.4.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.4.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            {% if week.5.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.5.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.5.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.5.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-
-                            {% if week.6.day %}
-                            <td class="border p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="{% url 'studyroomTask' room_id year month week.6.day %}">
-                            {% else %}
-                            <td class="border bg-gray-100 p-1 lg:h-40 w-24 overflow-auto transition cursor-pointer duration-500 ease hover:bg-gray-300">
-                                <a href="">
-                            {% endif %}
-                                    <div class="flex flex-col h-40 mx-lg:auto w-24 mx-auto overflow-hidden">
-                                        <div class="top h-5 w-full">
-                                            <span class="text-gray-500">{{ week.6.day }}</span>
-                                        </div>
-                                        <div class="bottom flex-grow h-30 py-1 w-full cursor-pointer">
-                                            {% for task in week.6.tasks %}
-                                            <div class="event bg-purple-400 text-white rounded p-1 text-sm mb-1">
-                                                <span class="event-name">
-                                                    {{ task }}
-                                                </span>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </a>
-                            </td>
-                        </tr>
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
+    {% include "studyroom/studyroomMenu.html" %}
+    <div class="studyroom-module">
+      <span class=""></span>
+      <div class="btn-group">
+        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ lastMonth }}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span></a>
+        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ leatMonth }}">{{ lastMonth }}</a>
+        <a class="btn btn-dark">{{ year }}-{{ month }}</a>
+        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ nextMonth }}">{{ nextMonth }}</a>
+        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ nextMonth }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span></a>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="">
+              <span class="">Sun</span>
+            </th>
+            <th class="">
+              <span class="">Mon</span>
+            </th>
+            <th class="">
+              <span class="">Tue</span>
+            </th>
+            <th class="">
+              <span class="">Wed</span>
+            </th>
+            <th class="">
+              <span class="">Thu</span>
+            </th>
+            <th class="">
+              <span class="">Fri</span>
+            </th>
+            <th class="">
+              <span class="">Sat</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for week in weeks %}
+            <tr class="">
+              {% for day in week %}
+                {% if day.isPast %}
+                  <td class="bg-info-subtle">
+                  {% else %}
+                    <td class="">
+                    {% endif %}
+                    <a href="">
+                      <div class="">
+                        <span class="">{{ day.date }}</span>
+                        {% for study in day.studies %}
+                          <span class="">
+                            {{ study }}
+                          </span>
                         {% endfor %}
-                        
-                        </tbody>
-                        </table>
-                        </div>
-        </div>
+                      </div>
+                    </a>
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-</div>
-{% endblock %}
+  {% endblock %}
