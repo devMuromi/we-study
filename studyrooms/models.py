@@ -31,7 +31,7 @@ class Study(models.Model):
     date = models.DateField()
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     content = models.TextField(null=True)
-    learning_time = models.IntegerField()
+    learning_time = models.PositiveIntegerField()
     progress = models.IntegerField()
 
     class Meta:

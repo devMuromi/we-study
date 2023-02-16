@@ -18,8 +18,6 @@ def studyroom_lobby(request):
     for studyroom in studyrooms:
         if studyroom in my_studyrooms:
             studyrooms = studyrooms.exclude(pk=studyroom.pk)
-    # studyrooms = my_studyrooms.union(studyrooms)
-    # print(studyrooms)
 
     paginator = Paginator(studyrooms, STUDYROOMS_PER_PAGE)
     page = request.GET.get("page")
@@ -135,12 +133,11 @@ def studyroom_member(request, studyroom_id):
             else:
                 return JsonResponse({"message": "권한이 없습니다"})
         except Exception as e:
-            print(e)
             return JsonResponse({"message": "알 수 없는 오류가 발생했습니다"})
 
 
 @login_required()
-def studyroom_confirm(request, studyroom_id):
+def studyroom_member_confirm(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all() or user != studyroom.leader:
@@ -161,7 +158,7 @@ def studyroom_confirm(request, studyroom_id):
             "isLeader": user == studyroom.leader,
             "applications": applications,
         }
-        return render(request, "studyroom/studyroomConfirm.html", context)
+        return render(request, "studyroom/studyroomMemberConfirm.html", context)
     elif request.method == "POST":
         try:
             if user == studyroom.leader:
@@ -178,12 +175,11 @@ def studyroom_confirm(request, studyroom_id):
             else:
                 return JsonResponse({"message": "권한이 없습니다"})
         except Exception as e:
-            print(e)
             return JsonResponse({"message": "알수 없는 오류가 발생했습니다"})
 
 
 @login_required()
-def studyroom_progress(request, studyroom_id):
+def studyroom_goal(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all():
@@ -214,11 +210,11 @@ def studyroom_progress(request, studyroom_id):
                 * 100
             ),
         }
-        return render(request, "studyroom/studyroomProgress.html", context)
+        return render(request, "studyroom/studyroomGoal.html", context)
 
 
 @login_required()
-def studyroom_goal(request, studyroom_id):
+def studyroom_goal_setting(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all() or user != studyroom.leader:
@@ -231,17 +227,17 @@ def studyroom_goal(request, studyroom_id):
         "tasks": tasks,
     }
     if request.method == "GET":
-        return render(request, "studyroom/studyroomGoal.html", context)
+        return render(request, "studyroom/studyroomGoalSetting.html", context)
     elif request.method == "POST":
         goal_content = request.POST.get("goal")
         if len(goal_content) == 0:
             context["error"] = "내용은 공백일 수 없습니다"
-            return render(request, "studyroom/studyroomGoal.html", context)
+            return render(request, "studyroom/studyroomGoalSetting.html", context)
 
         studyroom.task_set.create(
             content=goal_content, task_number=studyroom.task_set.count() + 1
         )
-        return render(request, "studyroom/studyroomGoal.html", context)
+        return render(request, "studyroom/studyroomGoalSetting.html", context)
 
 
 @login_required()
@@ -282,19 +278,27 @@ def studyroom_calendar(request, studyroom_id):
             [{}, {}, {}, {}, {}, {}, {}],
         ]
 
-        j = first_Weekday + 1
+        j = 0 if first_Weekday == 6 else first_Weekday + 1
         for i in range(last_day):
             weeks[j // 7][j % 7]["date"] = i + 1
             current_date = datetime.date(year, month, i + 1)
-            weeks[j // 7][j % 7]["studies"] = Study.objects.filter(
+            weeks[j // 7][j % 7]["studyCount"] = Study.objects.filter(
                 studyroom=studyroom, date=current_date
+            ).count()
+            weeks[j // 7][j % 7]["studyCount"] = (
+                "99+"
+                if weeks[j // 7][j % 7]["studyCount"] > 99
+                else weeks[j // 7][j % 7]["studyCount"]
             )
+
+            # weeks[j // 7][j % 7]["studies"] = Study.objects.filter(
+            #     studyroom=studyroom, date=current_date
+            # )
             if current_date <= today:
                 weeks[j // 7][j % 7]["isPast"] = True
             j += 1
         # remove unused weeks
         for i in range(5, 3, -1):
-            print(i)
             if not weeks[i][0]:
                 weeks.pop()
 
@@ -307,108 +311,84 @@ def studyroom_calendar(request, studyroom_id):
             "lastMonth": last_month,
             "nextMonth": next_month,
         }
-        print(weeks)
         return render(request, "studyroom/studyroomCalendar.html", context)
     else:
         return redirect("studyroom", studyroom_id)
 
 
-def studyroom_task(request, room_id, year, month, day):
-    if request.user.is_authenticated:
-        context = {
-            "room_id": room_id,
-        }
-        user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
+@login_required()
+def studyroom_calendar_study(request, studyroom_id, year, month, day):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    if not user in studyroom.member.all():
+        return redirect("/studyroom/" + str(studyroom_id))
 
-        if user in studyroom.member.all():
-            if request.method == "POST":
-                form = TodoForm(request.POST)
-                if form.is_valid():
-                    currentUserTask = studyroom.progress_rate_set.get(
-                        user=user
-                    ).totalProgress
-                    # 정상적이지 않은 접근으로 progress값이 범위 밖일때
-                    if (
-                        form.cleaned_data["progress"] < currentUserTask
-                        or form.cleaned_data["progress"]
-                        > studyroom.progress_task_set.count()
-                    ):
-                        context["error_message"] = "진도율이 잘못되었습니다, 새로 고침을 해주세요"
-                        return render(request, "studyrooms/studyroomTask.html", context)
+    # check if date is valid, if not, redirect to calendar
+    try:
+        selected_date = datetime.date(year, month, day)
+    except ValueError:
+        return redirect("studyroomCalendar", studyroom_id)
 
-                    selectedDate = datetime.date(year, month, day)
-                    calendar, isCalendarCreated = Calendar.objects.get_or_create(
-                        studyroom=studyroom, date=selectedDate
-                    )
+    current_progress = studyroom.studyroom_info.get(user=user).study_progress
+    context = {
+        "studyroomId": studyroom_id,
+        "isLeader": user == studyroom.leader,
+        "year": year,
+        "month": month,
+        "day": day,
+        "tasks": studyroom.task_set.filter(
+            task_number__gte=current_progress
+        ),  # task_number >= current_progress
+        "currentProgress": user.studyroom_info.get(studyroom=studyroom).study_progress,
+        "isToday": datetime.date.today() == selected_date,
+        "isFuture": datetime.date.today() < selected_date,
+        "studies": Study.objects.filter(studyroom=studyroom, date=selected_date),
+        "error": None,
+    }
+    for study in context["studies"]:
+        study.progress_content = studyroom.task_set.get(
+            task_number=study.progress
+        ).content
 
-                    todo = Todo()
-                    todo.calendar = calendar
-                    todo.writer = user
-                    todo.content = form.cleaned_data["content"]
-                    todo.learning_time = form.cleaned_data["learning_time"]
-                    todo.progress = form.cleaned_data["progress"]
-                    todo.save()
+    if request.method == "GET":
+        return render(request, "studyroom/studyroomCalendarStudy.html", context)
 
-                    progress_rate = studyroom.progress_rate_set.get(user=user)
-                    progress_rate.totalHour = (
-                        progress_rate.totalHour + todo.learning_time
-                    )
-                    progress_rate.totalProgress = todo.progress
-                    progress_rate.save()
-                    return redirect("studyroomTask", room_id, year, month, day)
-                else:
-                    error = form.errors
-                    context["error_message"] = error
-                    return render(request, "studyrooms/studyroomTask.html", context)
+    elif request.method == "POST":
+        form = StudyForm(request.POST)
+        if form.is_valid():
+            progress_input = form.cleaned_data["progress"]
+            content_input = form.cleaned_data["content"]
+            learning_time_input = form.cleaned_data["learning_time"]
 
-            else:
-                try:
-                    changMonthToEng = {
-                        1: "Jan",
-                        2: "Feb",
-                        3: "Mar",
-                        4: "Apr",
-                        5: "May",
-                        6: "Jun",
-                        7: "Jul",
-                        8: "Aug",
-                        9: "Sep",
-                        10: "Oct",
-                        11: "Nov",
-                        12: "Dec",
-                    }
-                    selectedDate = datetime.date(year, month, day)
-                    context["year"] = year
-                    context["month"] = month
-                    context["month_eng"] = changMonthToEng[month]
-                    context["day"] = day
+            # check value is valid
+            if progress_input < current_progress:
+                context["error"] = "진도율은 현재 진도 이상으로 설정해야 합니다"
+            elif progress_input > studyroom.task_set.count():
+                context["error"] = "진도율이 목표를 초과했습니다"
+            elif learning_time_input <= 0:
+                context["error"] = "공부 시간은 0보다 커야 합니다"
+            elif learning_time_input > 24:
+                context["error"] = "공부 시간은 24시간을 넘을 수 없습니다"
 
-                    # todo 목록
-                    calendar, isCalendarCreated = Calendar.objects.get_or_create(
-                        studyroom=studyroom, date=selectedDate
-                    )
-                    context["todos"] = calendar.todo_set.all()
-                    for todo in context["todos"]:
-                        todo.progress = studyroom.progress_task_set.get(
-                            taskNumber=todo.progress
-                        ).task
+            if context["error"] is not None:
+                return render(request, "studyroom/studyroomCalendarStudy.html", context)
 
-                    tasks = studyroom.progress_task_set.all()
-                    currentUserTask = studyroom.progress_rate_set.get(
-                        user=user
-                    ).totalProgress
-                    context["tasks"] = tasks[
-                        (currentUserTask - 1 if currentUserTask > 0 else 0) :
-                    ]
-
-                except ValueError:
-                    context["error_message"] = "날짜가 잘못되었습니다"
-                return render(request, "studyrooms/studyroomTask.html", context)
+            study = Study.objects.create(
+                studyroom=studyroom,
+                date=selected_date,
+                user=user,
+                learning_time=learning_time_input,
+                progress=progress_input,
+                content=content_input,
+            )
+            studyroom_info = studyroom.studyroom_info.get(user=user)
+            studyroom_info.study_progress = progress_input
+            studyroom_info.study_hours += learning_time_input
+            studyroom_info.save()
+            return redirect("studyroomCalendarStudy", studyroom_id, year, month, day)
         else:
-            return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
+            context["error"] = form.errors
+            return render(request, "studyroom/studyroomCalendarStudy.html", context)
 
 
 def studyroom_board(request, room_id):

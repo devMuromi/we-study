@@ -11,4 +11,4 @@ class StudyroomForm(forms.ModelForm):
 class StudyForm(forms.ModelForm):
     class Meta:
         model = Study
-        fields = ["content", "learning_time", "progress"]
+        fields = ["learning_time", "progress", "content"]
