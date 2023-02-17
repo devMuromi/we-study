@@ -1,25 +1,50 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Post, Comment
+from .models import Forum, Thread, Post
 from users.models import User
 from studyrooms.models import Studyroom
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 
-def forum(request, forum_type, studyroom_id):
-    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
-    posts = Post.objects.filter(studyroom=studyroom, type=forum_type)
-    paginator = Paginator(posts, 10)
-    page = request.GET.get("page")
-    ret_posts = paginator.get_page(page)
+@login_required()
+def forum(request, forum_id):
+    user = request.user
+    forum = get_object_or_404(Forum, pk=forum_id)
+    studyroom = forum.studyroom
+    studyroom_id = studyroom.id
 
-    FORUM_TYPES = {"N": "공지게시판", "G": "자유게시판", "Q": "질문게시판", "I": "정보게시판"}
-    forum_type = FORUM_TYPES[forum_type]
-    context = {
-        "studyroomId": studyroom_id,
-        "forumType": forum_type,
-        "posts": ret_posts,
-    }
-    return render(request, "forum/forum.html", context)
+    if request.method == "GET":
+        if studyroom:
+            if not user in studyroom.member.all():
+                return redirect("/studyroom/" + str(studyroom_id))
+
+            raw_threads = Thread.objects.filter(forum=forum)
+            page = request.GET.get("page")
+            paginator = Paginator(raw_threads, 10)
+            threads = paginator.get_page(page)
+
+            context = {
+                "studyroomId": studyroom_id,
+                "forumId": forum_id,
+                "threads": threads,
+            }
+            return render(request, "forum/studyroomForum.html", context)
+
+
+def create_thread(request, forum_id, thread_id):
+    pass
+
+
+def thread(request, thread_id):
+    pass
+
+
+def delete_thread(request, thread_id):
+    pass
+
+
+def delete_post(request, thread_id, post_id):
+    pass
 
 
 def post(request, studyroom_id, post_id):
@@ -80,21 +105,21 @@ def edit_post(request, studyroom_id, post_id):
         return redirect("detail", room_id, post_id)
 
 
-def delete_post(request, studyroom_id, post_id):
-    deletepost = get_object_or_404(Post, pk=post_id)
-    if deletepost.author == request.user:
-        board_thema = deletepost.thema
-        room_id = deletepost.studyroom.id
-        deletepost.delete()
-        return redirect("/boards/board/" + board_thema + "/" + str(room_id))
-    else:
-        # messages.info(request, '삭제 권한이 없습니다')
-        # return redirect('/boards/detail/'+str(post_id))
-        message = "삭제 권한이 없습니다."
-        comments = Comment.objects.filter(board=deletepost)
-        context = {"message": message, "post": deletepost, "comments": comments}
-        # return redirect('/boards/board/'+board_thema+'/'+str(room_id))
-        return render(request, "boards/detail.html", context)
+# def delete_post(request, studyroom_id, post_id):
+#     deletepost = get_object_or_404(Post, pk=post_id)
+#     if deletepost.author == request.user:
+#         board_thema = deletepost.thema
+#         room_id = deletepost.studyroom.id
+#         deletepost.delete()
+#         return redirect("/boards/board/" + board_thema + "/" + str(room_id))
+#     else:
+#         # messages.info(request, '삭제 권한이 없습니다')
+#         # return redirect('/boards/detail/'+str(post_id))
+#         message = "삭제 권한이 없습니다."
+#         comments = Comment.objects.filter(board=deletepost)
+#         context = {"message": message, "post": deletepost, "comments": comments}
+#         # return redirect('/boards/board/'+board_thema+'/'+str(room_id))
+#         return render(request, "boards/detail.html", context)
 
 
 def update_post(request, studyroom_id, post_id):

@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
+    {% include "studyroom/studyroomMenu.html" %}
+    <div class="studyroom-module">
+      <h2>대충 어떤 포럼인지 나옴</h2>
+      <a href="" class="btn btn-outline-dark">글쓰기</a>
+      <div>대충 포럼바꿀수있는 버튼그룹</div>
+      <div>대충 페이지네이션</div>
+      <div class="">
+          {% comment %} {% for post in page_posts %} {% endcomment %}
+            <div class="border p-2 row">
+                <a href="">
+                  대충 왼쪽에는 up/down vote?
+                  대충 제목
+                  대충 작성자 | 대충 최근 업데이트
+
+                </a>
+            </div>
+            <div class="border p-2 row">
+              <a href="">
+                대충 왼쪽에는 up/down vote?
+                대충 제목
+                대충 작성자 | 대충 최근 업데이트
+
+              </a>
+          </div>
+          {% comment %} {% endfor %} {% endcomment %}
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        {%if page_posts.has_previous%}
+          <a href="?page={{page_posts.previous_page_number}}" class="pagination__block">이전</a>
+          {%endif%}
+          {%for i in page_posts.paginator.page_range%}
+            <a class="pagination__block" href="?page={{i}}">{{i}}</a>
+            {%endfor%}
+            {%if page_posts.has_next%}
+              <a href="?page={{page_posts.next_page_number}}" class="pagination__block">다음</a>
+              {%endif%}
+            </div>
+          </div>
+        </div>
+      {% endblock %}

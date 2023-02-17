@@ -21,7 +21,7 @@ urlpatterns = [
     path("", views.main, name="main"),
     path("auth/", include("users.urls")),
     path("studyroom/", include("studyrooms.urls")),
-    path("board/", include("boards.urls")),
+    path("forum/", include("forum.urls")),
     path("mypage/", views.myPage, name="myPage"),
     path("mypage/myinfo/", views.myInfo, name="myInfo"),
     path("mypage/mycalender/", views.myCalender, name="myCalender"),

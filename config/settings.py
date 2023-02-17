@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "users",
     "studyrooms",
+    "forum",
     "config",
-    "boards",
 ]
 
 MIDDLEWARE = [

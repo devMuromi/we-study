@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from .models import Studyroom, Task, Study, StudyroomInfo, Application
 from users.models import User
+from forum.models import Forum
 from .forms import StudyroomForm, StudyForm
 
 
@@ -45,6 +46,9 @@ def create_studyroom(request):
         if form.is_valid():
             studyroom = Studyroom.objects.create(**form.cleaned_data, leader=user)
             studyroom.member.add(user)
+            forum = Forum.objects.create(
+                studyroom=studyroom, name="General"
+            )
             return redirect("studyroom", studyroom.pk)
         else:
             return render(request, "studyroom/create.html", {"error": form.errors})
@@ -390,14 +394,13 @@ def studyroom_calendar_study(request, studyroom_id, year, month, day):
             context["error"] = form.errors
             return render(request, "studyroom/studyroomCalendarStudy.html", context)
 
-
-def studyroom_board(request, room_id):
-    if request.user.is_authenticated:
-        user = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-        if user in studyroom.member.all():
-            return redirect("board", "N", room_id)
-        else:
-            return redirect("studyroom", room_id)
-    else:
-        return redirect("login")
+@login_required()
+def studyroom_board(request, studyroom_id):
+    user = request.user
+    studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
+    if not user in studyroom.member.all():
+        return redirect("/studyroom/" + str(studyroom_id))
+    if user in studyroom.member.all():
+        forum = Forum.objects.filter(studyroom=studyroom)[0]
+        return redirect("forum", forum.pk)
+   
