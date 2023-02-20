@@ -46,9 +46,7 @@ def create_studyroom(request):
         if form.is_valid():
             studyroom = Studyroom.objects.create(**form.cleaned_data, leader=user)
             studyroom.member.add(user)
-            forum = Forum.objects.create(
-                studyroom=studyroom, name="General"
-            )
+            forum = Forum.objects.create(studyroom=studyroom, name="General")
             return redirect("studyroom", studyroom.pk)
         else:
             return render(request, "studyroom/create.html", {"error": form.errors})
@@ -187,7 +185,7 @@ def studyroom_goal(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all():
-        return redirect("/studyroom/" + str(studyroom_id))
+        return redirect("studyroom", studyroom_id)
     if request.method == "GET":
         tasks = studyroom.task_set.all()
         my_complete_task_count = StudyroomInfo.objects.get(
@@ -222,7 +220,7 @@ def studyroom_goal_setting(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all() or user != studyroom.leader:
-        return redirect("/studyroom/" + str(studyroom_id))
+        return redirect("studyroom", studyroom_id)
 
     tasks = studyroom.task_set.all()
     context = {
@@ -249,7 +247,7 @@ def studyroom_calendar(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all():
-        return redirect("/studyroom/" + str(studyroom_id))
+        return redirect("studyroom", studyroom_id)
 
     if request.method == "GET":
         # get PARAM에서 연/월 가져오기
@@ -316,8 +314,6 @@ def studyroom_calendar(request, studyroom_id):
             "nextMonth": next_month,
         }
         return render(request, "studyroom/studyroomCalendar.html", context)
-    else:
-        return redirect("studyroom", studyroom_id)
 
 
 @login_required()
@@ -325,7 +321,7 @@ def studyroom_calendar_study(request, studyroom_id, year, month, day):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all():
-        return redirect("/studyroom/" + str(studyroom_id))
+        return redirect("studyroom", studyroom_id)
 
     # check if date is valid, if not, redirect to calendar
     try:
@@ -394,13 +390,13 @@ def studyroom_calendar_study(request, studyroom_id, year, month, day):
             context["error"] = form.errors
             return render(request, "studyroom/studyroomCalendarStudy.html", context)
 
+
 @login_required()
 def studyroom_board(request, studyroom_id):
     user = request.user
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     if not user in studyroom.member.all():
-        return redirect("/studyroom/" + str(studyroom_id))
+        return redirect("studyroom", studyroom_id)
     if user in studyroom.member.all():
         forum = Forum.objects.filter(studyroom=studyroom)[0]
         return redirect("forum", forum.pk)
-   

@@ -5,7 +5,7 @@ from users.models import User
 
 class Forum(models.Model):
     name = models.CharField(max_length=32)
-    studyroom = models.ForeignKey(Studyroom, on_delete=models.PROTECT, null=True)
+    studyroom = models.ForeignKey(Studyroom, on_delete=models.PROTECT)
 
 
 class Thread(models.Model):

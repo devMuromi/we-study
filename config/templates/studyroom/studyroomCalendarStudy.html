@@ -24,6 +24,7 @@
           <a href="{% url 'studyroomCalendar' studyroomId %}" class="btn btn-lg btn-outline-dark">돌아가기</a>
         </div>
       {% else %}
+
         <div class="row">
           <div class="col-4 me-1">
             {% for study in studies %}
@@ -81,7 +82,4 @@
       {% endif %}
     </div>
   </div>
-
-</div>
-</div>
 {% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from .models import Forum, Thread, Post
 from users.models import User
 from studyrooms.models import Studyroom
+from .forms import ThreadForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
@@ -11,32 +12,65 @@ def forum(request, forum_id):
     user = request.user
     forum = get_object_or_404(Forum, pk=forum_id)
     studyroom = forum.studyroom
-    studyroom_id = studyroom.id
+    if not user in studyroom.member.all():
+        return redirect("studyroom", studyroom.pk)
 
     if request.method == "GET":
-        if studyroom:
-            if not user in studyroom.member.all():
-                return redirect("/studyroom/" + str(studyroom_id))
-
-            raw_threads = Thread.objects.filter(forum=forum)
-            page = request.GET.get("page")
-            paginator = Paginator(raw_threads, 10)
-            threads = paginator.get_page(page)
-
-            context = {
-                "studyroomId": studyroom_id,
-                "forumId": forum_id,
-                "threads": threads,
-            }
-            return render(request, "forum/studyroomForum.html", context)
+        raw_threads = Thread.objects.filter(forum=forum)
+        page = request.GET.get("page")
+        paginator = Paginator(raw_threads, 10)
+        threads = paginator.get_page(page)
+        context = {
+            "studyroomId": studyroom.pk,
+            "forumId": forum_id,
+            "isLeader": user == studyroom.leader,
+            "threads": threads,
+        }
+        return render(request, "forum/studyroomForum.html", context)
 
 
-def create_thread(request, forum_id, thread_id):
-    pass
+@login_required()
+def create_thread(request, forum_id):
+    user = request.user
+    forum = get_object_or_404(Forum, pk=forum_id)
+    studyroom = forum.studyroom
+    if not user in studyroom.member.all():
+        return redirect("studyroom", studyroom.pk)
+    context = {
+        "studyroomId": studyroom.pk,
+        "forumId": forum_id,
+        "isLeader": user == studyroom.leader,
+    }
+    if request.method == "GET":
+        return render(request, "forum/createThread.html", context)
+
+    elif request.method == "POST":
+        form = ThreadForm(request.POST)
+        if form.is_valid():
+            title_input = form.cleaned_data["title"]
+            thread = Thread.objects.create(forum=forum, title=title_input, author=user)
+            return redirect("thread", thread.pk)
+        context["error"] = form.errors
+        return render(request, "forum/createThread.html", context)
 
 
+@login_required()
 def thread(request, thread_id):
-    pass
+    user = request.user
+    thread = get_object_or_404(Thread, pk=thread_id)
+    forum = thread.forum
+    studyroom = forum.studyroom
+    if not user in studyroom.member.all():
+        return redirect("studyroom", studyroom.pk)
+    if request.method == "GET":
+        context = {
+            "studyroomId": studyroom.pk,
+            "forumId": forum.id,
+            "isLeader": user == studyroom.leader,
+            "thread": thread,
+            "posts": thread.post_set.all(),
+        }
+        return render(request, "forum/thread.html", context)
 
 
 def delete_thread(request, thread_id):

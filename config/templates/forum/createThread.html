@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
+    {% include "studyroom/studyroomMenu.html" %}
+    <div class="studyroom-module">
+      <h2>새로운 스레드 만들기</h2>
+      <form action="{% url 'createThread' forumId %}" method="post">
+        {% csrf_token %}
+        <div class="form-floating mb-3">
+          <textarea class="form-control" id="l-content" name="title" placeholder="내용을 작성해주세요" style="height: 100px"></textarea>
+          <label for="l-content">내용을 작성해주세요</label>
+        </div>
+        <input class="btn btn-outline-dark" type="submit" value="등록"/>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -8,28 +8,27 @@
     {% include "studyroom/studyroomMenu.html" %}
     <div class="studyroom-module">
       <h2>대충 어떤 포럼인지 나옴</h2>
-      <a href="" class="btn btn-outline-dark">글쓰기</a>
+      <a href="{% url 'createThread' forumId %}" class="btn btn-outline-dark">글쓰기</a>
       <div>대충 포럼바꿀수있는 버튼그룹</div>
       <div>대충 페이지네이션</div>
       <div class="">
-          {% comment %} {% for post in page_posts %} {% endcomment %}
+        {% for thread in threads %}
+          <a href="">
             <div class="border p-2 row">
-                <a href="">
-                  대충 왼쪽에는 up/down vote?
-                  대충 제목
-                  대충 작성자 | 대충 최근 업데이트
-
-                </a>
+              <div>업, 다운보트</div>
+              <div>{{ thread.title }}</div>
+              <div>{{ thread.author }}
+                |
+                {{ thread.last_update }}</div>
             </div>
-            <div class="border p-2 row">
-              <a href="">
-                대충 왼쪽에는 up/down vote?
-                대충 제목
-                대충 작성자 | 대충 최근 업데이트
+          </a>
+          <div class="border p-2 row">
+            <a href="">
+              대충 왼쪽에는 up/down vote? 대충 제목 대충 작성자 | 대충 최근 업데이트
 
-              </a>
+            </a>
           </div>
-          {% comment %} {% endfor %} {% endcomment %}
+        {% endfor %}
       </div>
 
       <div class="mt-8 flex justify-center">

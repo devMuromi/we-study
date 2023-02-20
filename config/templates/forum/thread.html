@@ -1,0 +1,22 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
+    {% include "studyroom/studyroomMenu.html" %}
+    <div class="studyroom-module">
+      <h2>스레드 제목</h2>
+      <div>
+        제목:
+        {{ thread.title }}
+        author:
+        {{ thread.author }}
+        update:
+        {{ thread.last_update }}
+      </div>
+      {% for post in posts %}{% endfor %}
+    </div>
+  </div>
+{% endblock %}

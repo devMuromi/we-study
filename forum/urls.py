@@ -12,7 +12,7 @@ urlpatterns = [
         name="createThread",
     ),
     path(
-        "thread/<int:thread>/",
+        "thread/<int:thread_id>/",
         views.thread,
         name="thread",
     ),
