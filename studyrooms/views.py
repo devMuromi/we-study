@@ -46,7 +46,7 @@ def create_studyroom(request):
         if form.is_valid():
             studyroom = Studyroom.objects.create(**form.cleaned_data, leader=user)
             studyroom.member.add(user)
-            forum = Forum.objects.create(studyroom=studyroom, name="General")
+            forum = Forum.objects.create(studyroom=studyroom, name="일반")
             return redirect("studyroom", studyroom.pk)
         else:
             return render(request, "studyroom/create.html", {"error": form.errors})

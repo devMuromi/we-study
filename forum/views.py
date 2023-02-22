@@ -22,9 +22,11 @@ def forum(request, forum_id):
         threads = paginator.get_page(page)
         context = {
             "studyroomId": studyroom.pk,
-            "forumId": forum_id,
+            "studyroomName": studyroom.name,
             "isLeader": user == studyroom.leader,
+            "forum": forum,
             "threads": threads,
+            "forums": studyroom.forum_set.all(),
         }
         return render(request, "forum/studyroomForum.html", context)
 

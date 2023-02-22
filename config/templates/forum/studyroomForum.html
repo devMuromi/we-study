@@ -7,28 +7,31 @@
   <div class="studyroom-page">
     {% include "studyroom/studyroomMenu.html" %}
     <div class="studyroom-module">
-      <h2>대충 어떤 포럼인지 나옴</h2>
-      <a href="{% url 'createThread' forumId %}" class="btn btn-outline-dark">글쓰기</a>
-      <div>대충 포럼바꿀수있는 버튼그룹</div>
-      <div>대충 페이지네이션</div>
-      <div class="">
+      <h2>{{ studyroomName }}
+        -
+        {{ forum.name }}</h2>
+      <div id="forum-menu" class="mb-2">
+        <a class="btn btn-outline-dark float-end" href="{% url 'createThread' forum.pk %}">글쓰기</a>
+        <div class="btn-group">
+          {% for forum in forums %}
+            <a class="btn btn-dark" href="">{{ forum.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div id="thread-list" class="p-1">
         {% for thread in threads %}
-          <a href="">
-            <div class="border p-2 row">
-              <div>업, 다운보트</div>
-              <div>{{ thread.title }}</div>
-              <div>{{ thread.author }}
+          <div class="row p-2">
+            <a class="border-bottom overflow-hidden" href="{% url 'thread' thread.pk %}">
+              <div id="vote"></div>
+              <div class="float-end">{{ thread.author }}
                 |
                 {{ thread.last_update }}</div>
-            </div>
-          </a>
-          <div class="border p-2 row">
-            <a href="">
-              대충 왼쪽에는 up/down vote? 대충 제목 대충 작성자 | 대충 최근 업데이트
-
+              <h3>{{ thread.title }}</h3>
             </a>
           </div>
         {% endfor %}
+        <div id="page" class="btn-group"></div>
       </div>
 
       <div class="mt-8 flex justify-center">
