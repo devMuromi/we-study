@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from .models import Forum, Thread, Post
 from users.models import User
 from studyrooms.models import Studyroom
-from .forms import ThreadForm
-from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
+from .forms import ThreadForm, PostForm
 
 
 @login_required()
@@ -64,14 +64,31 @@ def thread(request, thread_id):
     studyroom = forum.studyroom
     if not user in studyroom.member.all():
         return redirect("studyroom", studyroom.pk)
+
+    context = {
+        "studyroomId": studyroom.pk,
+        "forumId": forum.id,
+        "isLeader": user == studyroom.leader,
+        "thread": thread,
+        "posts": thread.post_set.all(),
+    }
     if request.method == "GET":
-        context = {
-            "studyroomId": studyroom.pk,
-            "forumId": forum.id,
-            "isLeader": user == studyroom.leader,
-            "thread": thread,
-            "posts": thread.post_set.all(),
-        }
+        return render(request, "forum/thread.html", context)
+
+    elif request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            content_input = form.cleaned_data["content"]
+            is_anonymous_input = form.cleaned_data["is_anonymous"]
+            post = Post.objects.create(
+                thread=thread,
+                content=content_input,
+                author=user,
+                is_anonymous=is_anonymous_input,
+            )
+            context["posts"] = thread.post_set.all()
+            return redirect("thread", thread.pk)
+        context["error"] = form.errors
         return render(request, "forum/thread.html", context)
 
 

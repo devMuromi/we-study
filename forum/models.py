@@ -14,9 +14,7 @@ class Thread(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    upvote = models.PositiveIntegerField(default=0)
-    downvote = models.PositiveIntegerField(default=0)
-    isDeleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -27,8 +25,8 @@ class Post(models.Model):
     content = models.TextField()
     create_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    isAnonymous = models.BooleanField(default=False)
-    isDeleted = models.BooleanField(default=False)
+    is_anonymous = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.content[:10]

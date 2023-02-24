@@ -17,7 +17,6 @@
       {% for thread in threads %}
         <div class="row p-2">
           <a class="border-bottom overflow-hidden" href="{% url 'thread' thread.pk %}">
-            <div id="vote"></div>
             <div class="float-end">{{ thread.author }}
               |
               {{ thread.last_update }}</div>
