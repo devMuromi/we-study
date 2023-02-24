@@ -1,60 +1,48 @@
-{% extends 'base/base.html' %}
-{% block content %}
-  {% include "base/navbar.html" %}
-  {% if error %}
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
-  {% endif %}
-  <div class="studyroom-page">
-    {% include "studyroom/studyroomMenu.html" %}
-    <div class="studyroom-module">
-      <div class="btn-group float-end me-4">
-        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ lastMonth }}" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span></a>
-        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ lastMonth }}">{{ lastMonth }}</a>
-        <a class="btn btn-dark">{{ year }}-{{ month }}</a>
-        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ nextMonth }}">{{ nextMonth }}</a>
-        <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ nextMonth }}" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span></a>
-      </div>
-      <h2>스터디룸 달력</h2>
-      <table class="table">
-        <thead>
+{% extends 'studyroom/base.html' %}
+{% block studyroom %}
+  <div class="studyroom-module">
+    <div class="btn-group float-end me-4">
+      <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ lastMonth }}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span></a>
+      <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ lastMonth }}">{{ lastMonth }}</a>
+      <a class="btn btn-dark">{{ year }}-{{ month }}</a>
+      <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ nextMonth }}">{{ nextMonth }}</a>
+      <a class="btn btn-secondary" href="{% url 'studyroomCalendar' studyroomId %}?date={{ nextMonth }}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span></a>
+    </div>
+    <h2>스터디룸 달력</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Sun</th>
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+          <th>Sat</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for week in weeks %}
           <tr>
-            <th>Sun</th>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for week in weeks %}
-            <tr>
-              {% for day in week %}
-                {% if day.isPast %}
-                  <td class="bg-info-subtle">
-                  {% else %}
-                    <td class="">
-                    {% endif %}
-                    {% if day.date %}
-                      <a href="{% url 'studyroomCalendarStudy' studyroomId year month day.date %}">
-                        <div class="">{{ day.date }} <span class="badge bg-secondary rounded-pill">{{day.studyCount}}건의 학습</span>
-                          {% comment %} {% for study in day.studies %}
-                            <span class="">
-                              {{ study }}
-                            </span>
-                          {% endfor %} {% endcomment %}
-                        </div>
-                      </a>
-                    {% endif %}
-                  </td>
-                {% endfor %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+            {% for day in week %}
+              {% if day.isPast %}
+                <td class="bg-info-subtle">
+                {% else %}
+                  <td class="">
+                  {% endif %}
+                  {% if day.date %}
+                    <a href="{% url 'studyroomCalendarStudy' studyroomId year month day.date %}">
+                      <div class="">{{ day.date }}
+                        <span class="badge bg-secondary rounded-pill">{{day.studyCount}}건의 학습</span></div>
+                    </a>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   {% endblock %}

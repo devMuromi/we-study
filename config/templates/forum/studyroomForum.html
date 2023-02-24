@@ -1,50 +1,43 @@
-{% extends 'base/base.html' %}
-{% block content %}
-  {% include "base/navbar.html" %}
-  {% if error %}
-    <div class="alert alert-danger" role="alert">{{ error }}</div>
-  {% endif %}
-  <div class="studyroom-page">
-    {% include "studyroom/studyroomMenu.html" %}
-    <div class="studyroom-module">
-      <h2>{{ studyroomName }}
-        -
-        {{ forum.name }}</h2>
-      <div id="forum-menu" class="mb-2">
-        <a class="btn btn-outline-dark float-end" href="{% url 'createThread' forum.pk %}">글쓰기</a>
-        <div class="btn-group">
-          {% for forum in forums %}
-            <a class="btn btn-dark" href="">{{ forum.name }}</a>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div id="thread-list" class="p-1">
-        {% for thread in threads %}
-          <div class="row p-2">
-            <a class="border-bottom overflow-hidden" href="{% url 'thread' thread.pk %}">
-              <div id="vote"></div>
-              <div class="float-end">{{ thread.author }}
-                |
-                {{ thread.last_update }}</div>
-              <h3>{{ thread.title }}</h3>
-            </a>
-          </div>
+{% extends 'studyroom/base.html' %}
+{% block studyroom %}
+  <div class="studyroom-module">
+    <h2>{{ studyroomName }}
+      -
+      {{ forum.name }}</h2>
+    <div id="forum-menu" class="mb-2">
+      <a class="btn btn-outline-dark float-end" href="{% url 'createThread' forum.pk %}">글쓰기</a>
+      <div class="btn-group">
+        {% for forum in forums %}
+          <a class="btn btn-dark" href="">{{ forum.name }}</a>
         {% endfor %}
-        <div id="page" class="btn-group"></div>
       </div>
+    </div>
 
-      <div class="mt-8 flex justify-center">
-        {%if page_posts.has_previous%}
-          <a href="?page={{page_posts.previous_page_number}}" class="pagination__block">이전</a>
-          {%endif%}
-          {%for i in page_posts.paginator.page_range%}
-            <a class="pagination__block" href="?page={{i}}">{{i}}</a>
-            {%endfor%}
-            {%if page_posts.has_next%}
-              <a href="?page={{page_posts.next_page_number}}" class="pagination__block">다음</a>
-              {%endif%}
-            </div>
+    <div id="thread-list" class="p-1">
+      {% for thread in threads %}
+        <div class="row p-2">
+          <a class="border-bottom overflow-hidden" href="{% url 'thread' thread.pk %}">
+            <div id="vote"></div>
+            <div class="float-end">{{ thread.author }}
+              |
+              {{ thread.last_update }}</div>
+            <h3>{{ thread.title }}</h3>
+          </a>
+        </div>
+      {% endfor %}
+      <div id="page" class="btn-group"></div>
+    </div>
+
+    <div class="mt-8 flex justify-center">
+      {%if page_posts.has_previous%}
+        <a href="?page={{page_posts.previous_page_number}}" class="pagination__block">이전</a>
+        {%endif%}
+        {%for i in page_posts.paginator.page_range%}
+          <a class="pagination__block" href="?page={{i}}">{{i}}</a>
+          {%endfor%}
+          {%if page_posts.has_next%}
+            <a href="?page={{page_posts.next_page_number}}" class="pagination__block">다음</a>
+            {%endif%}
           </div>
         </div>
       {% endblock %}
