@@ -10,6 +10,9 @@
 
 ## Script
 
+-   Install Poetry(Linux, MacOS, WSL)
+    `curl -sSL https://install.python-poetry.org | python3 -`
+
 -   필요 라이브러리 설치
     `poetry install`
 

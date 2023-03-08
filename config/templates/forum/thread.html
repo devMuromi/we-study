@@ -1,21 +1,18 @@
 {% extends 'studyroom/base.html' %}
 {% block studyroom %}
   <div class="studyroom-module">
-    <h2>스레드 제목</h2>
-
     <div>
-      제목:
-      {{ thread.title }}
-      author:
-      {{ thread.author }}
-      update:
-      {{ thread.last_update }}
+      <div class="float-end">{{ thread.author }}
+        최근 업데이트:
+        {{ thread.last_update }}</div>
+      <h2>{{ thread.title }}</h2>
+
     </div>
     {% for post in posts %}{% endfor %}
 
     <div id="post-list" class="p-1">
       {% for post in posts %}
-        <div class="row p-2">
+        <div class="row p-2 border-bottom">
           <div class="float-end">{{ post.author }}
             {{ post.create_date }}</div>
           <span>{{ post.content }}</span>
@@ -32,7 +29,7 @@
           <label for="l-content">내용을 작성해주세요</label>
         </div>
         <span class="form-check float-end">
-          <input class="form-check-input" type="checkbox" id="l-anonymous" name="isAnonymous">
+          <input class="form-check-input" type="checkbox" id="l-anonymous" name="is_anonymous">
           <label class="form-check-label" for="l-anonymous">
             익명
           </label>

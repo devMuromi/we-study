@@ -65,13 +65,24 @@ def thread(request, thread_id):
     if not user in studyroom.member.all():
         return redirect("studyroom", studyroom.pk)
 
+    thread.last_update = thread.last_update.strftime("%Y-%m-%d %H:%M")
+    raw_posts = thread.post_set.filter(is_deleted=False)
+    posts = list()
+    for raw_post in raw_posts:
+        posts.append({
+            "content": raw_post.content,
+            "create_date": raw_post.create_date.strftime("%Y-%m-%d %H:%M"),
+            "author": "익명" if raw_post.is_anonymous else raw_post.author,
+        })
+
     context = {
         "studyroomId": studyroom.pk,
         "forumId": forum.id,
         "isLeader": user == studyroom.leader,
         "thread": thread,
-        "posts": thread.post_set.all(),
+        "posts": posts,
     }
+
     if request.method == "GET":
         return render(request, "forum/thread.html", context)
 

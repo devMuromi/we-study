@@ -15,24 +15,19 @@ from .forms import StudyroomForm, StudyForm
 def studyroom_lobby(request):
     STUDYROOMS_PER_PAGE = 18  # 페이지당 들어갈 스터디룸 숫자
     my_studyrooms = request.user.studyroom.all().order_by("-last_update")
-    studyrooms = Studyroom.objects.all().order_by("-last_update")
-    for studyroom in studyrooms:
-        if studyroom in my_studyrooms:
-            studyrooms = studyrooms.exclude(pk=studyroom.pk)
+    studyrooms = Studyroom.objects.exclude(pk__in=my_studyrooms).order_by("-last_update")
 
     paginator = Paginator(studyrooms, STUDYROOMS_PER_PAGE)
-    page = request.GET.get("page")
-    modified_studyrooms = paginator.get_page(page)
+    modified_studyrooms = paginator.get_page(request.GET.get("page", 1))
     pages = range(1, paginator.num_pages + 1)
 
     context = {
-        "myStudyrooms": None,
+        "myStudyrooms": my_studyrooms if modified_studyrooms.number == 1 else None,
         "studyrooms": modified_studyrooms,
         "pages": pages,
-        "currentPage": 1 if page == None else int(page),
+        "currentPage": modified_studyrooms.number,
     }
-    if page == None or page == "1":
-        context["myStudyrooms"] = my_studyrooms
+
     return render(request, "studyroom/lobby.html", context)
 
 
@@ -44,9 +39,11 @@ def create_studyroom(request):
         user = request.user
         form = StudyroomForm(request.POST)
         if form.is_valid():
-            studyroom = Studyroom.objects.create(**form.cleaned_data, leader=user)
+            studyroom = form.save(commit=False)
+            studyroom.leader = user
+            studyroom.save()
             studyroom.member.add(user)
-            forum = Forum.objects.create(studyroom=studyroom, name="일반")
+            Forum.objects.create(studyroom=studyroom, name="일반")
             return redirect("studyroom", studyroom.pk)
         else:
             return render(request, "studyroom/create.html", {"error": form.errors})
