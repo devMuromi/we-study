@@ -69,11 +69,15 @@ def thread(request, thread_id):
     raw_posts = thread.post_set.filter(is_deleted=False)
     posts = list()
     for raw_post in raw_posts:
-        posts.append({
-            "content": raw_post.content,
-            "create_date": raw_post.create_date.strftime("%Y-%m-%d %H:%M"),
-            "author": "익명" if raw_post.is_anonymous else raw_post.author,
-        })
+        posts.append(
+            {
+                "id": raw_post.pk,
+                "content": raw_post.content,
+                "create_date": raw_post.create_date.strftime("%Y-%m-%d %H:%M"),
+                "author": "익명" if raw_post.is_anonymous else raw_post.author,
+                "is_author": user == raw_post.author,
+            }
+        )
 
     context = {
         "studyroomId": studyroom.pk,
@@ -97,105 +101,38 @@ def thread(request, thread_id):
                 author=user,
                 is_anonymous=is_anonymous_input,
             )
-            context["posts"] = thread.post_set.all()
+            thread.last_update = post.create_date
+            thread.save()
             return redirect("thread", thread.pk)
         context["error"] = form.errors
         return render(request, "forum/thread.html", context)
 
 
 def delete_thread(request, thread_id):
-    pass
+    user = request.user
+    thread = get_object_or_404(Thread, pk=thread_id)
+    forum = thread.forum
+    studyroom = forum.studyroom
+    if not user in studyroom.member.all():
+        return redirect("studyroom", studyroom.pk)
+
+    if request.method == "GET":
+        pass
 
 
 def delete_post(request, thread_id, post_id):
-    pass
-
-
-def post(request, studyroom_id, post_id):
+    user = request.user
     post = get_object_or_404(Post, pk=post_id)
-    if request.method == "POST":
-        comment = Comment()
-        comment.author = request.user
-        comment.content = request.POST["content"]
-        post = get_object_or_404(Post, pk=post_id)
-        comment.board = post
-        comment.save()
-    comments = Comment.objects.filter(board=post)
-    context = {
-        "post": post,
-        "comments": comments,
-        "room_id": room_id,
-    }
-    return render(request, "boards/post.html", context)
+    thread = post.thread
+
+    if request.method == "GET":
+        if user == post.author:
+            post.is_deleted = True
+            post.save()
+    return redirect("thread", thread.pk)
 
 
-def create_post(request, forum_type, studyroom_id):
-    if request.method == "POST":
-        post = Post()
-        post.title = request.POST["title"]
-        post.content = request.POST["content"]
-        post.thema = board_thema
-        post.author = request.user
-        studyroom = get_object_or_404(Studyroom, pk=room_id)
-        post.studyroom = studyroom
-        post.save()
-        context = {
-            "room_id": room_id,
-            "board_thema": board_thema,
-        }
-        return redirect("/boards/board/" + board_thema + "/" + str(room_id))
-    context = {
-        "room_id": room_id,
-        "board_thema": board_thema,
-    }
-    return render(request, "forum/createpost.html", context)
-
-
-def edit_post(request, studyroom_id, post_id):
-    post = get_object_or_404(Post, pk=post_id)
-    if post.author == request.user:
-        return render(
-            request, "boards/postedit.html", {"post": post, "room_id": room_id}
-        )
-    else:
-        message = "수정 권한이 없습니다."
-        comments = Comment.objects.filter(board=post)
-        context = {
-            "post": post,
-            "comments": comments,
-            "message": message,
-            "room_id": room_id,
-        }
-        return redirect("detail", room_id, post_id)
-
-
-# def delete_post(request, studyroom_id, post_id):
-#     deletepost = get_object_or_404(Post, pk=post_id)
-#     if deletepost.author == request.user:
-#         board_thema = deletepost.thema
-#         room_id = deletepost.studyroom.id
-#         deletepost.delete()
-#         return redirect("/boards/board/" + board_thema + "/" + str(room_id))
-#     else:
-#         # messages.info(request, '삭제 권한이 없습니다')
-#         # return redirect('/boards/detail/'+str(post_id))
-#         message = "삭제 권한이 없습니다."
-#         comments = Comment.objects.filter(board=deletepost)
-#         context = {"message": message, "post": deletepost, "comments": comments}
-#         # return redirect('/boards/board/'+board_thema+'/'+str(room_id))
-#         return render(request, "boards/detail.html", context)
-
-
-def update_post(request, studyroom_id, post_id):
-    if request.method == "POST":
-        post = get_object_or_404(Post, pk=post_id)
-        post.title = request.POST["title"]
-        post.content = request.POST["content"]
-        post.save()
-    return redirect("detail", room_id, post_id)
-
-
-def postsearch(request, room_id, board_thema):
+def postsearaaaaaaaaach(request, room_id, board_thema):
     if request.method == "GET":
         searchWord = request.GET.get("searchWord")
         print(searchWord)
@@ -233,10 +170,3 @@ def postsearch(request, room_id, board_thema):
             "thema": thema,
         }
     return render(request, "boards/boardlist.html", context)
-
-
-def commentdelete(request, room_id, post_id, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    comment.delete()
-    context = {"room_id": room_id}
-    return redirect("detail", room_id, post_id)

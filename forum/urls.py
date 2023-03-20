@@ -20,6 +20,6 @@ urlpatterns = [
     path(
         "thread/<int:thread_id>/<int:post_id>",
         views.delete_post,
-        name="deltePost",
+        name="deletePost",
     ),
 ]

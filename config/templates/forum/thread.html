@@ -13,9 +13,18 @@
     <div id="post-list" class="p-1">
       {% for post in posts %}
         <div class="row p-2 border-bottom">
-          <div class="float-end">{{ post.author }}
-            {{ post.create_date }}</div>
+          <div class="d-inline-flex justify-content-between">
+            <span>{{ post.author }}
+            </span>
+            <span>
+              {% if post.is_author %}
+                <a class="" href="{% url 'deletePost' thread.id post.id %}">삭제</a>
+              {% endif %}
+              {{ post.create_date }}
+            </span>
+          </div>
           <span>{{ post.content }}</span>
+
         </div>
       {% endfor %}
       <div id="page" class="btn-group"></div>
