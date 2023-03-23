@@ -1,9 +1,6 @@
-<div class="flex flex-col w-44">
-  <span class="text-2xl font-semibold mb-4">마이페이지</span>
-  <a href="{% url 'myPage' %}" class="mb-2 font-semibold hover:text-gray-500">마이페이지 홈</a>
-  <div class="border-t border-gray-500 mb-2"></div>
-  <a href="{% url 'myInfo' %}" class="mb-2 font-semibold hover:text-gray-500">내 정보</a>
-  <a href="{% url 'myCalender' %}" class="mb-2 font-semibold hover:text-gray-500">나의 캘린더</a>
-  <div class="border-t border-gray-500 mb-2"></div>
-  <a href="{% url 'myPassword' %}" class="mb-2 font-semibold hover:text-gray-500">비밀번호 변경</a>
+<div class="list-group list-group-flush" style="width: 256px">
+  <h2>마이페이지</h2>
+  <a href="{% url 'myPage' %}" class="list-group-item list-group-item-action">마이페이지</a>
+  <a href="{% url 'myInfo' %}" class="list-group-item list-group-item-action">내 정보</a>
+  <a href="{% url 'myPassword' %}" class="list-group-item list-group-item-action">비밀번호 변경</a>
 </div>

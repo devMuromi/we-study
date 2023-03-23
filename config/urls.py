@@ -22,8 +22,7 @@ urlpatterns = [
     path("auth/", include("users.urls")),
     path("studyroom/", include("studyrooms.urls")),
     path("forum/", include("forum.urls")),
-    path("mypage/", views.myPage, name="myPage"),
-    path("mypage/myinfo/", views.myInfo, name="myInfo"),
-    path("mypage/mycalender/", views.myCalender, name="myCalender"),
-    path("mypage/mypassword/", views.myPassword, name="myPassword"),
+    path("mypage/", views.my_page, name="myPage"),
+    path("mypage/myinfo/", views.my_info, name="myInfo"),
+    path("mypage/mypassword/", views.my_password, name="myPassword"),
 ]

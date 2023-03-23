@@ -1,238 +1,208 @@
 @media (min-width: 768px) {
-  body {
-    font-family: "Noto Sans KR", sans-serif, 나눔고딕, 돋움, Dotum, 굴림, Gulim,
-      "Apple SD Gothic Neo" !important;
-    margin: 0;
-  }
+    body {
+        font-family: "Noto Sans KR", sans-serif, 나눔고딕, 돋움, Dotum, 굴림, Gulim, "Apple SD Gothic Neo" !important;
+        margin: 0;
+    }
 
-  .auth-form {
-    width: 720px;
-    margin-top: 32px;
-    padding: 16px 16px 0 16px;
-    border: 1px solid rgb(224, 224, 224);
-    border-radius: 1px;
-  }
+    .auth-form {
+        width: 720px;
+        margin-top: 32px;
+        padding: 16px 16px 0 16px;
+        border: 1px solid rgb(224, 224, 224);
+        border-radius: 1px;
+    }
 
-  .studyroom-page {
-    margin-top: 64px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-  }
+    .studyroom-page {
+        margin-top: 64px;
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+    }
 
-  .studyroom-module {
-    margin-left: 130px;
-    width: 1024px;
-  }
+    .studyroom-module {
+        margin-left: 130px;
+        width: 1024px;
+    }
 
-  .nav {
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: row;
-    font-size: 20px;
-    background: white;
-    border-bottom: 1px solid rgb(238, 238, 238);
-  }
+    .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: row;
+        font-size: 20px;
+        background: white;
+        border-bottom: 1px solid rgb(238, 238, 238);
+    }
 
-  .nav__logo {
-    margin-left: 32px;
-    padding: 16px 0 16px 0;
-    font-weight: 600;
-  }
-  .nav__menu {
-    display: flex;
-    justify-content: flex-end;
-    margin-left: auto;
-    margin-right: 16px;
-  }
-  .nav__link {
-    padding: 16px 0 16px 0;
-    margin-right: 16px;
-    white-space: nowrap;
-    font-weight: 600;
-    color: rgb(60, 60, 60);
-    border-bottom: solid 3px transparent;
-  }
-  .nav__link:hover {
-    border-color: lightgray;
-  }
+    .nav__logo {
+        margin-left: 32px;
+        padding: 16px 0 16px 0;
+        font-weight: 600;
+    }
+    .nav__menu {
+        display: flex;
+        justify-content: flex-end;
+        margin-left: auto;
+        margin-right: 16px;
+    }
+    .nav__link {
+        padding: 16px 0 16px 0;
+        margin-right: 16px;
+        white-space: nowrap;
+        font-weight: 600;
+        color: rgb(60, 60, 60);
+        border-bottom: solid 3px transparent;
+    }
+    .nav__link:hover {
+        border-color: lightgray;
+    }
 }
 
 body {
-  font-family: "Noto Sans KR", sans-serif, 나눔고딕, 돋움, Dotum, 굴림, Gulim,
-    "Apple SD Gothic Neo" !important;
-  height: 100%;
-  background: rgb(255, 255, 255);
+    font-family: "Noto Sans KR", sans-serif, 나눔고딕, 돋움, Dotum, 굴림, Gulim, "Apple SD Gothic Neo" !important;
+    height: 100%;
+    background: rgb(255, 255, 255);
 }
 a {
-  /* 링크 밑줄 제거 */
-  color: black;
-  text-decoration: none;
+    color: black;
+    text-decoration: none;
 }
 
 .main {
-  display: flex;
-  /* text-align: center; */
-  align-items: center;
-  flex-direction: column;
+    display: flex;
+    /* text-align: center; */
+    align-items: center;
+    flex-direction: column;
 }
-
-.main--row {
-  display: flex;
-  /* text-align: center; */
-  justify-content: center;
-  flex-direction: row;
-}
-
-
-
-
 
 .info {
-  margin-top: 20px;
-  border-collapse: collapse;
+    margin-top: 20px;
+    border-collapse: collapse;
 }
 
 .info tr {
-  border-top: solid 1px rgb(200, 200, 200);
+    border-top: solid 1px rgb(200, 200, 200);
 }
 
 .info tr:last-child {
-  border-bottom: solid 1px rgb(200, 200, 200);
+    border-bottom: solid 1px rgb(200, 200, 200);
 }
 
 .info td {
-  height: 50px;
-  font-size: 18px;
+    height: 50px;
+    font-size: 18px;
 }
 
 .info td:nth-child(1) {
-  font-size: 20px;
-  width: 250px;
-  font-weight: 600;
-  border-right: solid 1px rgb(200, 200, 200);
-  text-align: right;
-  padding-right: 15px;
-  color: rgb(80, 80, 80);
-  background-color: rgb(250, 250, 250);
+    font-size: 20px;
+    width: 250px;
+    font-weight: 600;
+    border-right: solid 1px rgb(200, 200, 200);
+    text-align: right;
+    padding-right: 15px;
+    color: rgb(80, 80, 80);
+    background-color: rgb(250, 250, 250);
 }
 
 .info td:nth-child(2) {
-  width: 550px;
-  padding-left: 15px;
+    width: 550px;
+    padding-left: 15px;
 }
 
 .profile {
-  display: flex;
-  flex-direction: row;
-  border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    border: 2px solid black;
 }
 
 .profile__header {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  background-color: rgb(238, 238, 238);
-  width: 19%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(238, 238, 238);
+    width: 19%;
 }
 
 .profile__header__main {
-  font-size: 24px;
-  font-weight: 600;
+    font-size: 24px;
+    font-weight: 600;
 }
 
 .profile__header__sub {
-  font-size: 14px;
-  margin-top: 3px;
+    font-size: 14px;
+    margin-top: 3px;
 }
 
 .profile__box {
-  padding: 70px 0 70px 0;
-  text-align: center;
-  border-right: 1px solid rgb(238, 238, 238);
-  width: 27%;
-  background-color: white;
+    padding: 70px 0 70px 0;
+    text-align: center;
+    border-right: 1px solid rgb(238, 238, 238);
+    width: 27%;
+    background-color: white;
 }
 
 .profile__box--solo {
-  font-size: 22px;
-  font-weight: 600;
+    font-size: 22px;
+    font-weight: 600;
 }
 
 .profile__box--multi {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .profile__box__main {
-  font-size: 22px;
-  font-weight: 600;
+    font-size: 22px;
+    font-weight: 600;
 }
 
 .profile__box__sub {
-  margin-top: 10px;
-  font-size: 19px;
+    margin-top: 10px;
+    font-size: 19px;
 }
-
-/* found page에서 사용. 추후 이름 변경 content */
-.content {
-  display: flex;
-  flex-direction: row;
-}
-
 
 .lobby {
-  display: flex;
-  /* text-align: center; */
-  justify-content: center;
-  /* flex-direction: column; */
-  margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
 }
 
 .lobby__box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 200px;
-  height: 550px;
-  margin: 0 32px;
-  border-radius: 16px;
-  transition: 0.5s;
-  background: #efefef;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 550px;
+    margin: 0 32px;
+    border-radius: 16px;
+    transition: 0.5s;
+    background: #efefef;
 }
 .lobby__box:hover {
-  width: 250px;
-  height: 570px;
-  background: lightgray;
-  transition: 0.5s;
+    width: 250px;
+    height: 570px;
+    background: lightgray;
+    transition: 0.5s;
 }
 
 .lobby__name {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: bold;
-  margin-top: 300px;
-}
-
-.pagination {
-  margin-top: 32px;
-  margin-bottom: 32px;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 300px;
 }
 
 .pagination__block {
-  padding: 16px;
-  background: white;
-  border-radius: 16px;
-  border-style: solid;
-  border-width: 1px;
-  border-color: rgb(224, 224, 224);
-  margin: 0 6px 0 6px;
-  font-weight: 600;
+    padding: 16px;
+    background: white;
+    border-radius: 16px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(224, 224, 224);
+    margin: 0 6px 0 6px;
+    font-weight: 600;
 }
 
 .pagination__block:hover {
-  background-color: rgb(240, 240, 240);
+    background-color: rgb(240, 240, 240);
 }

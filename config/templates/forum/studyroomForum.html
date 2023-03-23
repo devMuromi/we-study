@@ -27,6 +27,20 @@
       <div id="page" class="btn-group"></div>
     </div>
 
+    <div class="row">
+      <div class="btn-toolbar col" role="toolbar">
+        <div class="btn-group">
+          {% for page in pages %}
+            {% if currentPage == page %}
+              <a href="{% url 'forum' forum.id %}?page={{ page }}" class="btn btn-outline-dark active">{{page}}</a>
+            {% else %}
+              <a href="{% url 'forum' forum.id %}?page={{ page }}" class="btn btn-outline-dark">{{page}}</a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
     <div class="mt-8 flex justify-center">
       {%if page_posts.has_previous%}
         <a href="?page={{page_posts.previous_page_number}}" class="pagination__block">이전</a>

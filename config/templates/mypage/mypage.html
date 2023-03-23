@@ -1,31 +1,25 @@
-{% extends 'base/base.html' %}
-{% block content %}
-  {% include "base/navbar.html" %}
-  <div class="main">
-    <div class="page">
-      {% include "mypage/menu.html" %}
-      <div class="page__content">
-        <div class="profile">
-          <div class="profile__header">
-            <span class="profile__header__main">{{ name }}</span>
-            <span class="profile__header__sub">{{ email }}</span>
-          </div>
-          <div class="profile__box profile__box--solo">
-            <a href="{% url 'myInfo' %}">내 정보</a>
-          </div>
-          <div class="profile__box profile__box--multi">
-            <span class="profile__box__main">
-              <a href="">스터디룸</a>
-            </span>
-            <a href="" " class=" profile__box__sub"="profile__box__sub"">{{ studyroom_number }}개</a>
-          </div>
-          <div class="profile__box profile__box--multi">
-            <span class="profile__box__main">
-              <a href="">학습 시간</a>
-            </span>
-            <span class="profile__box__sub">{{ study_time }}시간</span>
-          </div>
-        </div>
+{% extends 'mypage/base.html' %}
+{% block mypage %}
+  <div class="studyroom-module">
+    <div class="profile">
+      <div class="profile__header">
+        <span class="profile__header__main">{{ name }}</span>
+        <span class="profile__header__sub">{{ email }}</span>
+      </div>
+      <div class="profile__box profile__box--solo">
+        <a href="{% url 'myInfo' %}">내 정보</a>
+      </div>
+      <div class="profile__box profile__box--multi">
+        <span class="profile__box__main">
+          <a href="">스터디룸</a>
+        </span>
+        <a href="" class="profile__box__sub">{{ studyroom_number }}개</a>
+      </div>
+      <div class="profile__box profile__box--multi">
+        <span class="profile__box__main">
+          <a href="">학습 시간</a>
+        </span>
+        <span class="profile__box__sub">{{ study_time }}시간</span>
       </div>
     </div>
   </div>

@@ -9,6 +9,7 @@ from .forms import ThreadForm, PostForm
 
 @login_required()
 def forum(request, forum_id):
+    THREADS_PER_PAGE = 10
     user = request.user
     forum = get_object_or_404(Forum, pk=forum_id)
     studyroom = forum.studyroom
@@ -16,17 +17,18 @@ def forum(request, forum_id):
         return redirect("studyroom", studyroom.pk)
 
     if request.method == "GET":
-        raw_threads = Thread.objects.filter(forum=forum)
-        page = request.GET.get("page")
+        raw_threads = Thread.objects.filter(forum=forum).order_by("-last_update")
         paginator = Paginator(raw_threads, 10)
-        threads = paginator.get_page(page)
+        threads = paginator.get_page(request.GET.get("page", 1))
         context = {
             "studyroomId": studyroom.pk,
             "studyroomName": studyroom.name,
             "isLeader": user == studyroom.leader,
             "forum": forum,
-            "threads": threads,
             "forums": studyroom.forum_set.all(),
+            "threads": threads,
+            "currentPage": threads.number,
+            "pages": range(1, paginator.num_pages + 1),
         }
         return render(request, "forum/studyroomForum.html", context)
 
@@ -132,41 +134,41 @@ def delete_post(request, thread_id, post_id):
     return redirect("thread", thread.pk)
 
 
-def postsearaaaaaaaaach(request, room_id, board_thema):
-    if request.method == "GET":
-        searchWord = request.GET.get("searchWord")
-        print(searchWord)
-        if request.GET["selectTag"] == "title":
-            searchposts = Post.objects.filter(title__icontains=searchWord)
-        elif request.GET["selectTag"] == "content":
-            searchposts = Post.objects.filter(content__icontains=searchWord)
-        elif request.GET["selectTag"] == "author":
-            users = User.objects.filter(username__icontains=searchWord)
-            count = 0
-            for user in users:
-                if count == 0:
-                    searchposts = Post.objects.filter(author=user)
-                    count += 1
-                else:
-                    searchposts = searchposts | Post.objects.filter(author=user)
+# def postsearaaaaaaaaach(request, room_id, board_thema):
+#     if request.method == "GET":
+#         searchWord = request.GET.get("searchWord")
+#         print(searchWord)
+#         if request.GET["selectTag"] == "title":
+#             searchposts = Post.objects.filter(title__icontains=searchWord)
+#         elif request.GET["selectTag"] == "content":
+#             searchposts = Post.objects.filter(content__icontains=searchWord)
+#         elif request.GET["selectTag"] == "author":
+#             users = User.objects.filter(username__icontains=searchWord)
+#             count = 0
+#             for user in users:
+#                 if count == 0:
+#                     searchposts = Post.objects.filter(author=user)
+#                     count += 1
+#                 else:
+#                     searchposts = searchposts | Post.objects.filter(author=user)
 
-        paginator = Paginator(searchposts, 5)
-        page = request.GET.get("page")
-        page_posts = paginator.get_page(page)
+#         paginator = Paginator(searchposts, 5)
+#         page = request.GET.get("page")
+#         page_posts = paginator.get_page(page)
 
-        if board_thema == "n":
-            thema = "공지게시판"
-        if board_thema == "f":
-            thema = "자유게시판"
-        if board_thema == "q":
-            thema = "질문게시판"
-        if board_thema == "i":
-            thema = "정보게시판"
-        context = {
-            "room_id": room_id,
-            "posts": searchposts,
-            "board_thema": board_thema,
-            "page_posts": page_posts,
-            "thema": thema,
-        }
-    return render(request, "boards/boardlist.html", context)
+#         if board_thema == "n":
+#             thema = "공지게시판"
+#         if board_thema == "f":
+#             thema = "자유게시판"
+#         if board_thema == "q":
+#             thema = "질문게시판"
+#         if board_thema == "i":
+#             thema = "정보게시판"
+#         context = {
+#             "room_id": room_id,
+#             "posts": searchposts,
+#             "board_thema": board_thema,
+#             "page_posts": page_posts,
+#             "thema": thema,
+#         }
+#     return render(request, "boards/boardlist.html", context)

@@ -1,0 +1,11 @@
+{% extends 'base/base.html' %}
+{% block content %}
+  {% include "base/navbar.html" %}
+  {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  {% endif %}
+  <div class="studyroom-page">
+    {% include "mypage/menu.html" %}
+    {% block mypage %}{% endblock %}
+  </div>
+{% endblock %}

@@ -18,18 +18,14 @@ def studyroom_lobby(request):
     studyrooms = Studyroom.objects.exclude(pk__in=my_studyrooms).order_by(
         "-last_update"
     )
-
     paginator = Paginator(studyrooms, STUDYROOMS_PER_PAGE)
     modified_studyrooms = paginator.get_page(request.GET.get("page", 1))
-    pages = range(1, paginator.num_pages + 1)
-
     context = {
         "myStudyrooms": my_studyrooms if modified_studyrooms.number == 1 else None,
         "studyrooms": modified_studyrooms,
-        "pages": pages,
+        "pages": range(1, paginator.num_pages + 1),
         "currentPage": modified_studyrooms.number,
     }
-
     return render(request, "studyroom/lobby.html", context)
 
 

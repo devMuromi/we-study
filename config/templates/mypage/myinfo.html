@@ -1,35 +1,22 @@
-{% extends 'base/base.html' %}
-{% block content %}
-  {% include "base/navbar.html" %}
-  <div class="flex flex-col items-center">
-    <div class="mt-16 flex">
-      {% include "mypage/menu.html" %}
-      <div class="page__content">
-        <div class="text-2xl font-semibold">내 정보</div>
-        <div>
-          <table class="info">
-            <tbody>
-              <tr>
-                <td>아이디</td>
-                <td>{{ name }}</td>
-              </tr>
-              <tr>
-                <td>이메일</td>
-                <td>{{ email }}</td>
-              </tr>
-              <tr>
-                <td>성별</td>
-                <td>{{ gender }}</td>
-              </tr>
-              <tr>
-                <td>출생일</td>
-                <td>{{ birthDate }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    </div>
+{% extends 'mypage/base.html' %}
+{% block mypage %}
+  <div class="studyroom-module">
+    <h2>내 정보</h2>
+    <table class="info">
+      <tbody>
+        <tr>
+          <td>아이디</td>
+          <td>{{ name }}</td>
+        </tr>
+        <tr>
+          <td>이메일</td>
+          <td>{{ email }}</td>
+        </tr>
+        <tr>
+          <td>직업</td>
+          <td>{{ job }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 {% endblock %}
