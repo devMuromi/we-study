@@ -15,7 +15,9 @@ from .forms import StudyroomForm, StudyForm
 def studyroom_lobby(request):
     STUDYROOMS_PER_PAGE = 18  # 페이지당 들어갈 스터디룸 숫자
     my_studyrooms = request.user.studyroom.all().order_by("-last_update")
-    studyrooms = Studyroom.objects.exclude(pk__in=my_studyrooms).order_by("-last_update")
+    studyrooms = Studyroom.objects.exclude(pk__in=my_studyrooms).order_by(
+        "-last_update"
+    )
 
     paginator = Paginator(studyrooms, STUDYROOMS_PER_PAGE)
     modified_studyrooms = paginator.get_page(request.GET.get("page", 1))
@@ -55,12 +57,28 @@ def studyroom(request, studyroom_id):
     studyroom = get_object_or_404(Studyroom, pk=studyroom_id)
     # Studyroom Page
     if user in studyroom.member.all():
+        tasks = studyroom.task_set.all()
+        total_comlete_task_count = sum(
+            [
+                studyroomInfo.study_progress
+                for studyroomInfo in StudyroomInfo.objects.filter(studyroom=studyroom)
+            ]
+        )
         context = {
             "studyroomId": studyroom_id,
-            "name": studyroom.name,
+            "studyroomName": studyroom.name,
             "memberCount": studyroom.member.count(),
-            "totalStudyTime": 0,
-            "averageProgressRate": 0,
+            "totalStudyTime": sum(
+                study.study_hours
+                for study in StudyroomInfo.objects.filter(studyroom=studyroom)
+            ),
+            "averageProgressRate": 0
+            if tasks.count() == 0
+            else round(
+                total_comlete_task_count
+                / (tasks.count() * studyroom.member.count())
+                * 100
+            ),
             "isLeader": user == studyroom.leader,
         }
         return render(request, "studyroom/studyroom.html", context)

@@ -3,7 +3,7 @@
   <div class="studyroom-module">
     <div class="profile">
       <div class="profile__header">
-        <span class="profile__header__main">{{ name }}</span>
+        <span class="profile__header__main">{{ studyroomName }}</span>
         <span class="profile__header__sub"></span>
       </div>
       <div class="profile__box profile__box--multi">
@@ -16,13 +16,13 @@
         <span class="profile__box__main">
           <a href="{% url 'studyroomProgress' studyroomId %}">평균 진도율</a>
         </span>
-        <a href="{% url 'studyroomProgress' studyroomId %}" class="profile__box__sub">%</a>
+        <a href="{% url 'studyroomProgress' studyroomId %}" class="profile__box__sub">{{ averageProgressRate }}%</a>
       </div>
       <div class="profile__box profile__box--multi">
         <span class="profile__box__main">
           <a href="">총학습 시간</a>
         </span>
-        <a href="" class="profile__box__sub">시간</a>
+        <a href="" class="profile__box__sub">{{ totalStudyTime }}시간</a>
       </div>
     </div>
   </div>

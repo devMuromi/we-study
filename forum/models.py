@@ -7,7 +7,7 @@ class Forum(models.Model):
     name = models.CharField(max_length=32)
     studyroom = models.ForeignKey(Studyroom, on_delete=models.PROTECT)
 
-
+    
 class Thread(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
